@@ -15,11 +15,11 @@ import (
 )
 
 type Params struct {
-	ConfigBasePath     string `default:"/etc/skpr"`
-	AwsAccessKeyId     string
-	AwsSecretAccessKey string
-	AwsRegion          string
-	FromAddress        string
+	ConfigBasePath     string `envconfig:"config_base_path" default:"/etc/skpr"`
+	AwsAccessKeyId     string `envconfig:"aws_access_key_id"`
+	AwsSecretAccessKey string `envconfig:"aws_secret_access_key"`
+	AwsRegion          string `envconfig:"aws_region"`
+	FromAddress        string `envconfig:"from_address"`
 }
 
 func main() {
