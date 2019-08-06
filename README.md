@@ -20,7 +20,7 @@ The app knows how skpr mounts configuration into the container (via the mount at
 
 ### Environment variables
 
-* IAM Key ID `SKPRMAIL_AWS_ACCESS_KEY_ID_`
+* IAM Key ID `SKPRMAIL_AWS_ACCESS_KEY_ID`
 * IAM Key Secret `SKPRMAIL_AWS_SECRET_ACCESS_KEY`
 * AWS Region `SKPRMAIL_AWS_REGION`
 * From Address `SKPRMAIL_FROM_ADDRESS`

@@ -10,6 +10,10 @@ import (
 const (
 	DefaultPath string = "/etc/skpr"
 	DefaultTrimSuffix string = "\n"
+	PathPartConfig string = "config"
+	PathPartSecret string = "secret"
+	PathPartDefault string = "default"
+	PathPartOverride string = "override"
 )
 
 // Get returns the configured value of a given key, and the fallback value if no
@@ -48,17 +52,42 @@ func(c *Config) GetWithFallback(key, fallback string) string {
 
 // Get returns the configured value of a given key.
 func(c *Config) Get(key string) (string, error) {
-	file := fmt.Sprintf("%s/%s", c.Path, key)
+	var value string
 
-	if _, err := os.Stat(file); os.IsNotExist(err) {
-		return "", err
+	// These directories are weighted in order of precedence. Values specified
+	// in multiple paths will be overridden by directories further the list.
+	//
+	// @see https://github.com/skpr/docs/blob/master/docs/config.md#deep-dive
+	paths := []string{
+		c.FilePath(PathPartConfig, PathPartDefault, key),
+		c.FilePath(PathPartSecret, PathPartDefault, key),
+		c.FilePath(PathPartConfig, PathPartOverride, key),
+		c.FilePath(PathPartSecret, PathPartOverride, key),
 	}
 
-	contents, err := ioutil.ReadFile(file)
-	if err != nil {
-		return "", err
+	for _, file := range paths {
+		if _, err := os.Stat(file); os.IsNotExist(err) {
+			continue
+		}
+		contents, err := ioutil.ReadFile(file)
+		if err != nil {
+			// This could indicate permissions issues with the mount, so exit.
+			return "", err
+		}
+		value = string(contents)
 	}
 
-	return strings.TrimSuffix(string(contents), "\n"), nil
+	return strings.TrimSuffix(value, DefaultTrimSuffix), nil
 }
 
+// DirPath returns the directory path of a specific config type and
+// system/user provided value.
+func(c *Config) DirPath(configType, defaultOrOverride string) string {
+	return fmt.Sprintf("%s/%s/%s", c.Path, configType, defaultOrOverride)
+}
+
+// FilePath returns the file path of a specific config type, system/user
+// provided value, and key.
+func(c *Config) FilePath(configType, defaultOrOverride, key string) string {
+	return fmt.Sprintf("%s/%s", c.DirPath(configType, defaultOrOverride), key)
+}
