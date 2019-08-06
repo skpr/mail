@@ -14,6 +14,13 @@ import (
 	"github.com/skpr/mail/internal/skprconfig"
 )
 
+const (
+	ConfigKeyAccessId     string = "smtp.username"
+	ConfigKeyAccessSecret string = "smtp.password"
+	ConfigKeyRegion       string = "smtp.region"
+	ConfigKeyFrom         string = "smtp.from.address"
+)
+
 type Params struct {
 	ConfigBasePath     string `envconfig:"config_base_path" default:"/etc/skpr"`
 	AwsAccessKeyId     string `envconfig:"aws_access_key_id"`
@@ -33,25 +40,25 @@ func main() {
 	// Check for skpr config values for any parameters in Params which are empty.
 	c := skprconfig.NewConfig(params.ConfigBasePath, skprconfig.DefaultTrimSuffix)
 	if params.AwsAccessKeyId == "" {
-		params.AwsAccessKeyId, err = c.GetWithError("smtp.username")
+		params.AwsAccessKeyId, err = c.GetWithError(ConfigKeyAccessId)
 		if err != nil {
 			log.Fatal("AWS credentials not configured")
 		}
 	}
 	if params.AwsSecretAccessKey == "" {
-		params.AwsSecretAccessKey, err = c.GetWithError("smtp.password")
+		params.AwsSecretAccessKey, err = c.GetWithError(ConfigKeyAccessSecret)
 		if err != nil {
 			log.Fatal("AWS credentials not configured")
 		}
 	}
 	if params.AwsRegion == "" {
-		params.AwsRegion, err = c.GetWithError("smtp.region")
+		params.AwsRegion, err = c.GetWithError(ConfigKeyRegion)
 		if err != nil {
 			log.Fatal("AWS region not configured")
 		}
 	}
 	if params.FromAddress == "" {
-		params.FromAddress, err = c.GetWithError("smtp.region")
+		params.FromAddress, err = c.GetWithError(ConfigKeyFrom)
 		if err != nil {
 			log.Println("FROM address not configured. This may impact deliverability of the message.")
 		}
