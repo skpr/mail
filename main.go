@@ -40,25 +40,25 @@ func main() {
 	// Check for skpr config values for any parameters in Params which are empty.
 	c := skprconfig.NewConfig(params.ConfigBasePath, skprconfig.DefaultTrimSuffix)
 	if params.AwsAccessKeyId == "" {
-		params.AwsAccessKeyId, err = c.GetWithError(ConfigKeyAccessId)
+		params.AwsAccessKeyId, err = c.Get(ConfigKeyAccessId)
 		if err != nil {
 			log.Fatal("AWS credentials not configured")
 		}
 	}
 	if params.AwsSecretAccessKey == "" {
-		params.AwsSecretAccessKey, err = c.GetWithError(ConfigKeyAccessSecret)
+		params.AwsSecretAccessKey, err = c.Get(ConfigKeyAccessSecret)
 		if err != nil {
 			log.Fatal("AWS credentials not configured")
 		}
 	}
 	if params.AwsRegion == "" {
-		params.AwsRegion, err = c.GetWithError(ConfigKeyRegion)
+		params.AwsRegion, err = c.Get(ConfigKeyRegion)
 		if err != nil {
 			log.Fatal("AWS region not configured")
 		}
 	}
 	if params.FromAddress == "" {
-		params.FromAddress, err = c.GetWithError(ConfigKeyFrom)
+		params.FromAddress, err = c.Get(ConfigKeyFrom)
 		if err != nil {
 			log.Println("FROM address not configured. This may impact deliverability of the message.")
 		}

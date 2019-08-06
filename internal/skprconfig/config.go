@@ -18,9 +18,8 @@ const (
 // This is a convenience if the default skpr config mount point is being used.
 func Get(key, fallback string) string {
 	c := NewConfig(DefaultPath, DefaultTrimSuffix)
-	return c.Get(key, fallback)
+	return c.GetWithFallback(key, fallback)
 }
-
 
 // Config holds parameters for config.
 type Config struct {
@@ -36,10 +35,10 @@ func NewConfig(path, trimSuffix string) *Config {
 	}
 }
 
-// Get returns the configured value of a given key, and the fallback value if no
-// key does not exist.
-func(c *Config) Get(key, fallback string) string {
-	value, err := c.GetWithError(key)
+// GetWithFallback returns the configured value of a given key, and the fallback
+// value if no key does not exist.
+func(c *Config) GetWithFallback(key, fallback string) string {
+	value, err := c.Get(key)
 	if err != nil {
 		return fallback
 	}
@@ -47,8 +46,8 @@ func(c *Config) Get(key, fallback string) string {
 	return value
 }
 
-// GetWithError returns the configured value of a given key.
-func(c *Config) GetWithError(key string) (string, error) {
+// Get returns the configured value of a given key.
+func(c *Config) Get(key string) (string, error) {
 	file := fmt.Sprintf("%s/%s", c.Path, key)
 
 	if _, err := os.Stat(file); os.IsNotExist(err) {
