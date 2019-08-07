@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// Check for skpr config values for any parameters in Params which are empty.
-	c := skprconfig.NewConfig(params.ConfigBasePath, skprconfig.DefaultTrimSuffix)
+	c := skprconfig.NewConfig(params.ConfigBasePath)
 	if params.AwsAccessKeyId == "" {
 		params.AwsAccessKeyId, err = c.Get(ConfigKeyAccessId)
 		if err != nil {

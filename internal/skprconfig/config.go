@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/spf13/afero"
 )
 
 const (
@@ -21,7 +23,7 @@ const (
 //
 // This is a convenience if the default skpr config mount point is being used.
 func Get(key, fallback string) string {
-	c := NewConfig(DefaultPath, DefaultTrimSuffix)
+	c := NewConfig(DefaultPath)
 	return c.GetWithFallback(key, fallback)
 }
 
@@ -29,13 +31,16 @@ func Get(key, fallback string) string {
 type Config struct {
 	Path string
 	TrimSuffix string
+	FileSystem afero.Fs
 }
 
 // NewConfig returns a new Config struct with a given set of parameters.
-func NewConfig(path, trimSuffix string) *Config {
+func NewConfig(path string) *Config {
+	fs := afero.NewOsFs()
 	return &Config{
 		Path: path,
-		TrimSuffix: trimSuffix,
+		TrimSuffix: DefaultTrimSuffix,
+		FileSystem: fs,
 	}
 }
 
@@ -59,17 +64,17 @@ func(c *Config) Get(key string) (string, error) {
 	//
 	// @see https://github.com/skpr/docs/blob/master/docs/config.md#deep-dive
 	paths := []string{
-		c.FilePath(PathPartConfig, PathPartDefault, key),
-		c.FilePath(PathPartSecret, PathPartDefault, key),
-		c.FilePath(PathPartConfig, PathPartOverride, key),
-		c.FilePath(PathPartSecret, PathPartOverride, key),
+		c.filePath(PathPartConfig, PathPartDefault, key),
+		c.filePath(PathPartSecret, PathPartDefault, key),
+		c.filePath(PathPartConfig, PathPartOverride, key),
+		c.filePath(PathPartSecret, PathPartOverride, key),
 	}
 
 	for _, file := range paths {
-		if _, err := os.Stat(file); os.IsNotExist(err) {
+		if _, err := c.FileSystem.Stat(file); os.IsNotExist(err) {
 			continue
 		}
-		contents, err := ioutil.ReadFile(file)
+		contents, err := c.readFile(file)
 		if err != nil {
 			// This could indicate permissions issues with the mount, so exit.
 			return "", err
@@ -80,14 +85,24 @@ func(c *Config) Get(key string) (string, error) {
 	return strings.TrimSuffix(value, DefaultTrimSuffix), nil
 }
 
-// DirPath returns the directory path of a specific config type and
+// dirPath returns the directory path of a specific config type and
 // system/user provided value.
-func(c *Config) DirPath(configType, defaultOrOverride string) string {
+func(c *Config) dirPath(configType, defaultOrOverride string) string {
 	return fmt.Sprintf("%s/%s/%s", c.Path, configType, defaultOrOverride)
 }
 
-// FilePath returns the file path of a specific config type, system/user
+// filePath returns the file path of a specific config type, system/user
 // provided value, and key.
-func(c *Config) FilePath(configType, defaultOrOverride, key string) string {
-	return fmt.Sprintf("%s/%s", c.DirPath(configType, defaultOrOverride), key)
+func(c *Config) filePath(configType, defaultOrOverride, key string) string {
+	return fmt.Sprintf("%s/%s", c.dirPath(configType, defaultOrOverride), key)
+}
+
+// readFile adapted from io/ioutil.ReadFile() to use injected filesystem.
+func(c *Config) readFile(filename string) ([]byte, error) {
+	f, err := c.FileSystem.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	return ioutil.ReadAll(f)
 }
