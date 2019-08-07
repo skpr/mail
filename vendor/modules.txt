@@ -31,13 +31,19 @@ github.com/aws/aws-sdk-go/private/protocol/query/queryutil
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
 github.com/aws/aws-sdk-go/internal/sdkuri
 github.com/aws/aws-sdk-go/private/protocol/json/jsonutil
+# github.com/davecgh/go-spew v1.1.0
+github.com/davecgh/go-spew/spew
 # github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
 github.com/jmespath/go-jmespath
 # github.com/kelseyhightower/envconfig v1.4.0
 github.com/kelseyhightower/envconfig
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
 # github.com/spf13/afero v1.2.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
+# github.com/stretchr/testify v1.3.0
+github.com/stretchr/testify/assert
 # golang.org/x/text v0.3.0
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
