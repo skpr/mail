@@ -11,7 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ses"
 	"github.com/kelseyhightower/envconfig"
 
-	"github.com/skpr/mail/internal/skprconfig"
+	"github.com/skpr/go-skprconfig"
 )
 
 const (
