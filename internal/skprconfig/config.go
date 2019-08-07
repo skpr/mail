@@ -70,6 +70,7 @@ func(c *Config) Get(key string) (string, error) {
 		c.filePath(PathPartSecret, PathPartOverride, key),
 	}
 
+	configNoExist := true
 	for _, file := range paths {
 		if _, err := c.FileSystem.Stat(file); os.IsNotExist(err) {
 			continue
@@ -79,7 +80,13 @@ func(c *Config) Get(key string) (string, error) {
 			// This could indicate permissions issues with the mount, so exit.
 			return "", err
 		}
+		configNoExist = false
 		value = string(contents)
+	}
+
+	if configNoExist {
+		err := fmt.Errorf("key not found")
+		return "", err
 	}
 
 	return strings.TrimSuffix(value, DefaultTrimSuffix), nil
