@@ -30,8 +30,9 @@ type Params struct {
 }
 
 func main() {
-	// Load app behavior from environment.
 	var params Params
+
+	// Load app behavior from environment.
 	err := envconfig.Process("skprmail", &params)
 	if err != nil {
 		log.Fatal("Could not process configuration")
@@ -39,50 +40,54 @@ func main() {
 
 	// Check for skpr config values for any parameters in Params which are empty.
 	c := skprconfig.NewConfig(params.ConfigBasePath)
-	if params.AwsAccessKeyId == "" {
-		params.AwsAccessKeyId, err = c.Get(ConfigKeyAccessId)
-		if err != nil {
-			log.Fatal("AWS credentials not configured")
-		}
-	}
-	if params.AwsSecretAccessKey == "" {
-		params.AwsSecretAccessKey, err = c.Get(ConfigKeyAccessSecret)
-		if err != nil {
-			log.Fatal("AWS credentials not configured")
-		}
-	}
-	if params.AwsRegion == "" {
-		params.AwsRegion, err = c.Get(ConfigKeyRegion)
-		if err != nil {
-			log.Fatal("AWS region not configured")
-		}
-	}
-	if params.FromAddress == "" {
-		params.FromAddress, err = c.Get(ConfigKeyFrom)
-		if err != nil {
-			log.Println("FROM address not configured. This may impact deliverability of the message.")
-		}
+
+	var (
+		username = c.GetWithFallback(ConfigKeyAccessId, params.AwsAccessKeyId)
+		password = c.GetWithFallback(ConfigKeyAccessSecret, params.AwsAccessKeyId)
+		region   = c.GetWithFallback(ConfigKeyRegion, params.AwsAccessKeyId)
+		address  = c.GetWithFallback(ConfigKeyFrom, params.AwsAccessKeyId)
+	)
+
+	if username == "" {
+		log.Fatal("AWS credentials not configured")
 	}
 
-	sess, err := awsSession(params)
+	if password == "" {
+		log.Fatal("AWS credentials not configured")
+	}
+
+	if region == "" {
+		log.Fatal("AWS region not configured")
+	}
+
+	if address == "" {
+		log.Println("FROM address not configured. This may impact deliverability of the message.")
+	}
+
+	config := &aws.Config{
+		Region:      aws.String(region),
+		Credentials: credentials.NewStaticCredentials(username, password, ""),
+	}
+
+	sess, err := session.NewSession(config)
 	if err != nil {
 		// @todo fallback to smtp forwarding (i.e. mailhog) if aws session not available.
 		log.Fatal("AWS region not configured")
 	}
-	client := ses.New(sess)
 
 	// Load input from Stdin and build up raw mail object.
-	input, err := ioutil.ReadAll(os.Stdin)
+	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
 		log.Fatalf("failed to read message from stdin: %s", err)
 	}
-	mailinput := &ses.SendRawEmailInput{
-		RawMessage: &ses.RawMessage{Data: input},
+
+	input := &ses.SendRawEmailInput{
+		RawMessage: &ses.RawMessage{Data: data},
 		Source:     &params.FromAddress,
 	}
 
 	// Send email.
-	output, err := client.SendRawEmail(mailinput)
+	output, err := ses.New(sess).SendRawEmail(input)
 	if err != nil {
 		log.Fatalf("failed to send message: %s", err)
 	}
@@ -90,12 +95,4 @@ func main() {
 	// Everything looks OK!
 	log.Printf("message id %s", *output.MessageId)
 	os.Exit(0)
-}
-
-// Helper function which creates AWS session.
-func awsSession(params Params) (*session.Session, error) {
-	return session.NewSession(&aws.Config{
-		Region:      aws.String(params.AwsRegion),
-		Credentials: credentials.NewStaticCredentials(params.AwsAccessKeyId, params.AwsSecretAccessKey, ""),
-	})
 }
