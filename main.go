@@ -10,20 +10,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
 	"github.com/kelseyhightower/envconfig"
-
 	"github.com/skpr/go-skprconfig"
+	extensionsv1beta1 "github.com/skpr/operator/pkg/apis/extensions/v1beta1"
 )
 
-const (
-	ConfigKeyAccessId     string = "smtp.username"
-	ConfigKeyAccessSecret string = "smtp.password"
-	ConfigKeyRegion       string = "smtp.region"
-	ConfigKeyFrom         string = "smtp.from.address"
-)
-
+// Params which are loaded from environment variables.
 type Params struct {
 	ConfigBasePath     string `envconfig:"config_base_path" default:"/etc/skpr"`
-	AwsAccessKeyId     string `envconfig:"aws_access_key_id"`
+	AwsAccessKeyID     string `envconfig:"aws_access_key_id"`
 	AwsSecretAccessKey string `envconfig:"aws_secret_access_key"`
 	AwsRegion          string `envconfig:"aws_region"`
 	FromAddress        string `envconfig:"from_address"`
@@ -42,10 +36,10 @@ func main() {
 	c := skprconfig.NewConfig(params.ConfigBasePath)
 
 	var (
-		username = c.GetWithFallback(ConfigKeyAccessId, params.AwsAccessKeyId)
-		password = c.GetWithFallback(ConfigKeyAccessSecret, params.AwsAccessKeyId)
-		region   = c.GetWithFallback(ConfigKeyRegion, params.AwsAccessKeyId)
-		address  = c.GetWithFallback(ConfigKeyFrom, params.AwsAccessKeyId)
+		username = c.GetWithFallback(extensionsv1beta1.ConfigMapKeyUsername, params.AwsAccessKeyID)
+		password = c.GetWithFallback(extensionsv1beta1.SecretKeyPassword, params.AwsSecretAccessKey)
+		region   = c.GetWithFallback(extensionsv1beta1.ConfigMapKeyRegion, params.AwsRegion)
+		address  = c.GetWithFallback(extensionsv1beta1.ConfigMapKeyFromAddress, params.FromAddress)
 	)
 
 	if username == "" {
