@@ -1,9 +1,10 @@
 package mailhog
 
 import (
-	"bytes"
 	"net/mail"
 	"net/smtp"
+
+	"github.com/skpr/mail/internal/mailutils"
 )
 
 const (
@@ -14,13 +15,13 @@ const (
 )
 
 // Send the email to Mailhog.
-func Send(data []byte) error {
-	msg, err := mail.ReadMessage(bytes.NewReader(data))
+func Send(msg *mail.Message) error {
+	data, err := mailutils.MessageToBytes(msg)
 	if err != nil {
 		return err
 	}
 
-	to := msg.Header.Get("To")
+	to := msg.Header.Get(mailutils.HeaderTo)
 
 	return smtp.SendMail(Addr, nil, From, []string{to}, data)
 }

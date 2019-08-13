@@ -1,16 +1,16 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
+	"net/mail"
 	"os"
 	"strings"
 
 	"github.com/skpr/go-skprconfig"
 	extensionsv1beta1 "github.com/skpr/operator/pkg/apis/extensions/v1beta1"
 
-	"github.com/skpr/mail/internal/mailhog"
-	"github.com/skpr/mail/internal/ses"
+	"github.com/skpr/mail/internal/provider/mailhog"
+	"github.com/skpr/mail/internal/provider/ses"
 )
 
 func main() {
@@ -21,24 +21,23 @@ func main() {
 		from     = skprconfig.Get(extensionsv1beta1.ConfigMapKeyFromAddress, os.Getenv("SKPRMAIL_FROM"))
 	)
 
-	// Load input from Stdin and build up raw mail object.
-	data, err := ioutil.ReadAll(os.Stdin)
+	msg, err := mail.ReadMessage(os.Stdin)
 	if err != nil {
-		log.Fatalf("failed to read message from stdin: %s", err)
+		log.Fatalf("failed to read message: %s", err)
 	}
 
-	err = send(region, username, password, from, data)
+	err = send(region, username, password, from, msg)
 	if err != nil {
 		log.Fatalf("failed to send: %s", err)
 	}
 }
 
 // Send email based on parameters.
-func send(region, username, password, from string, data []byte) error {
+func send(region, username, password, from string, msg *mail.Message) error {
 	// Use AWS if the credentials match what we would expect for IAM.
 	if strings.HasPrefix(username, ses.AccessKeyPrefix) {
-		return ses.Send(region, username, password, from, data)
+		return ses.Send(region, username, password, from, msg)
 	}
 
-	return mailhog.Send(data)
+	return mailhog.Send(msg)
 }
