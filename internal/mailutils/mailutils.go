@@ -9,8 +9,11 @@ import (
 )
 
 const (
-	// HeaderFRom is used to identify the From header for an email.
+	// HeaderFrom is used to identify the From header for an email.
 	HeaderFrom = "From"
+
+	// HeaderTo is used to identify the To header for an email.
+	HeaderTo = "To"
 
 	// The term CRLF refers to Carriage Return (ASCII 13, \r) Line Feed (ASCII 10, \n).
 	// They're used to note the termination of a line.

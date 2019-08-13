@@ -21,7 +21,7 @@ func Send(msg *mail.Message) error {
 		return err
 	}
 
-	to := msg.Header.Get("To")
+	to := msg.Header.Get(mailutils.HeaderTo)
 
 	return smtp.SendMail(Addr, nil, From, []string{to}, data)
 }

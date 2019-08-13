@@ -28,6 +28,8 @@ func Send(region, username, password, from string, msg *mail.Message) error {
 		return err
 	}
 
+	// AWS SES requires that we enforce a FROM address.
+	// This is a helper to ensure that all outgoing mail comes from the correct FROM.
 	msg.Header[mailutils.HeaderFrom] = []string{from}
 
 	data, err := mailutils.MessageToBytes(msg)
@@ -42,13 +44,11 @@ func Send(region, username, password, from string, msg *mail.Message) error {
 		Source: aws.String(from),
 	}
 
-	// Send email.
 	output, err := ses.New(sess).SendRawEmail(input)
 	if err != nil {
 		log.Fatalf("failed to send message: %s", err)
 	}
 
-	// Everything looks OK!
 	log.Printf("message id %s", *output.MessageId)
 
 	return nil
