@@ -2,6 +2,9 @@ package ses
 
 import (
 	"log"
+	"net/mail"
+
+	"github.com/skpr/mail/internal/mailutils"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -14,13 +17,20 @@ import (
 const AccessKeyPrefix = "AKIA"
 
 // Send email via AWS SES.
-func Send(region, username, password, from string, data []byte) error {
+func Send(region, username, password, from string, msg *mail.Message) error {
 	config := &aws.Config{
 		Region:      aws.String(region),
 		Credentials: credentials.NewStaticCredentials(username, password, ""),
 	}
 
 	sess, err := session.NewSession(config)
+	if err != nil {
+		return err
+	}
+
+	msg.Header[mailutils.HeaderFrom] = []string{from}
+
+	data, err := mailutils.MessageToBytes(msg)
 	if err != nil {
 		return err
 	}
