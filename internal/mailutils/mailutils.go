@@ -11,6 +11,10 @@ import (
 const (
 	// HeaderFrom is used to identify the From header for an email.
 	HeaderFrom = "From"
+	// HeaderReplyTo is used to identify the Reply-To header for an email.
+	HeaderReplyTo = "Reply-To"
+	// HeaderSender is used to identify the Sender header for an email.
+	HeaderSender = "Sender"
 	// HeaderTo is used to identify the To header for an email.
 	HeaderTo = "To"
 
