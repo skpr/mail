@@ -9,8 +9,8 @@ import (
 	"github.com/skpr/go-skprconfig"
 	extensionsv1beta1 "github.com/skpr/operator/pkg/apis/extensions/v1beta1"
 
-	"github.com/skpr/mail/internal/mailhog"
-	"github.com/skpr/mail/internal/ses"
+	"github.com/skpr/mail/internal/provider/mailhog"
+	"github.com/skpr/mail/internal/provider/ses"
 )
 
 func main() {

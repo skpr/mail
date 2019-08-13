@@ -31,6 +31,8 @@ github.com/aws/aws-sdk-go/private/protocol/query/queryutil
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
 github.com/aws/aws-sdk-go/internal/sdkuri
 github.com/aws/aws-sdk-go/private/protocol/json/jsonutil
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
 # github.com/gogo/protobuf v1.2.2-0.20190723190241-65acae22fc9d
 github.com/gogo/protobuf/proto
 github.com/gogo/protobuf/sortkeys
@@ -38,6 +40,8 @@ github.com/gogo/protobuf/sortkeys
 github.com/google/gofuzz
 # github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
 github.com/jmespath/go-jmespath
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
 # github.com/skpr/go-skprconfig v0.0.0-20190807122141-b000d35b7fe3
 github.com/skpr/go-skprconfig
 # github.com/skpr/operator v0.4.1-0.20190809094709-34daf3b052e9
@@ -46,6 +50,8 @@ github.com/skpr/operator/pkg/apis/meta/v1
 # github.com/spf13/afero v1.2.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
+# github.com/stretchr/testify v1.3.0
+github.com/stretchr/testify/assert
 # golang.org/x/net v0.0.0-20190613194153-d28f0bde5980
 golang.org/x/net/http2
 golang.org/x/net/http/httpguts
