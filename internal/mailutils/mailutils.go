@@ -23,6 +23,28 @@ const (
 	crlf = "\r\n"
 )
 
+// EnforceFrom ensures that all outgoing mail comes from the correct FROM while preserving intent in the Reply-To.
+func EnforceFrom(msg *mail.Message, from string) error {
+	var reply []string
+
+	if val, ok := msg.Header[HeaderFrom]; ok {
+		reply = val
+	} else {
+		reply = []string{from}
+	}
+
+	// Set Reply-To as the origin From address if Reply-To is not set.
+	if _, ok := msg.Header[HeaderReplyTo]; !ok {
+		msg.Header[HeaderReplyTo] = reply
+	}
+
+	// These need to be set.
+	msg.Header[HeaderFrom] = []string{from}
+	msg.Header[HeaderSender] = []string{from}
+
+	return nil
+}
+
 // MessageToBytes converts a Message to a set of bytes ready for delivery.
 // Inspired by https://github.com/mohamedattahri/mail/blob/master/message.go#L263
 func MessageToBytes(msg *mail.Message) ([]byte, error) {
