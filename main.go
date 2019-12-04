@@ -5,8 +5,9 @@ import (
 	"net/mail"
 	"os"
 	"strings"
+	"errors"
 
-	"github.com/skpr/go-skprconfig"
+	skprconfig "github.com/skpr/go-config"
 	extensionsv1beta1 "github.com/skpr/operator/pkg/apis/extensions/v1beta1"
 
 	"github.com/skpr/mail/internal/provider/mailhog"
@@ -14,11 +15,16 @@ import (
 )
 
 func main() {
+	config, err := skprconfig.Load()
+	if err != nil && !errors.Is(err, os.ErrNotExist){
+		panic(err)
+	}
+
 	var (
-		username = skprconfig.Get(extensionsv1beta1.ConfigMapKeyUsername, os.Getenv("SKPRMAIL_USERNAME"))
-		password = skprconfig.Get(extensionsv1beta1.SecretKeyPassword, os.Getenv("SKPRMAIL_PASSWORD"))
-		region   = skprconfig.Get(extensionsv1beta1.ConfigMapKeyRegion, os.Getenv("SKPRMAIL_REGION"))
-		from     = skprconfig.Get(extensionsv1beta1.ConfigMapKeyFromAddress, os.Getenv("SKPRMAIL_FROM"))
+		username = config.GetWithFallback(extensionsv1beta1.ConfigMapKeyUsername, os.Getenv("SKPRMAIL_USERNAME"))
+		password = config.GetWithFallback(extensionsv1beta1.SecretKeyPassword, os.Getenv("SKPRMAIL_PASSWORD"))
+		region   = config.GetWithFallback(extensionsv1beta1.ConfigMapKeyRegion, os.Getenv("SKPRMAIL_REGION"))
+		from     = config.GetWithFallback(extensionsv1beta1.ConfigMapKeyFromAddress, os.Getenv("SKPRMAIL_FROM"))
 	)
 
 	msg, err := mail.ReadMessage(os.Stdin)

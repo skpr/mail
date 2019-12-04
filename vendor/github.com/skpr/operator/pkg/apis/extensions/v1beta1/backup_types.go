@@ -1,9 +1,12 @@
 package v1beta1
 
 import (
+	"time"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	skprmetav1 "github.com/skpr/operator/pkg/apis/meta/v1"
+	"github.com/skpr/operator/pkg/utils/slice"
 )
 
 // BackupSpec defines the desired state of Backup
@@ -111,4 +114,19 @@ type BackupList struct {
 
 func init() {
 	SchemeBuilder.Register(&Backup{}, &BackupList{})
+}
+
+// GetDuration returns the duration of the backup.
+func (b Backup) GetDuration() *time.Duration {
+	if b.Status.StartTime != nil && b.Status.CompletionTime != nil {
+		duration := b.Status.CompletionTime.Sub(b.Status.StartTime.Time)
+		return &duration
+	}
+
+	return nil
+}
+
+// HasTag checks if this backup has a tag.
+func (b Backup) HasTag(tag string) bool {
+	return slice.Contains(b.Spec.Tags, tag)
 }
