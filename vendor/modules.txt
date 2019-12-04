@@ -45,7 +45,7 @@ github.com/jmespath/go-jmespath
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/skpr/go-config v0.0.0-20191204022630-8ef2e0331a8d
+# github.com/skpr/go-config v0.0.0-20191204035903-a3b391813c43
 github.com/skpr/go-config
 # github.com/skpr/operator v0.4.1
 github.com/skpr/operator/pkg/apis/extensions/v1beta1

@@ -4,7 +4,8 @@ go 1.13
 
 require (
 	github.com/aws/aws-sdk-go v1.25.47
-	github.com/skpr/go-config v0.0.0-20191204022630-8ef2e0331a8d
+	github.com/pkg/errors v0.8.1
+	github.com/skpr/go-config v0.0.0-20191204035903-a3b391813c43
 	github.com/skpr/operator v0.4.1
 	github.com/stretchr/testify v1.4.0
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc

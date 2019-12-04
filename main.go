@@ -5,6 +5,7 @@ import (
 	"net/mail"
 	"os"
 	"strings"
+	"errors"
 
 	skprconfig "github.com/skpr/go-config"
 	extensionsv1beta1 "github.com/skpr/operator/pkg/apis/extensions/v1beta1"
@@ -15,7 +16,7 @@ import (
 
 func main() {
 	config, err := skprconfig.Load()
-	if err != nil && os.IsNotExist(err) {
+	if err != nil && !errors.Is(err, os.ErrNotExist){
 		panic(err)
 	}
 
