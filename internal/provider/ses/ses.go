@@ -39,7 +39,7 @@ func Send(region, username, password, from string, to []string, msg *mail.Messag
 	}
 
 	input := &ses.SendRawEmailInput{
-		Destinations:         aws.StringSlice(to),
+		Destinations: createDestinations(to),
 		RawMessage: &ses.RawMessage{
 			Data: data,
 		},
@@ -54,4 +54,12 @@ func Send(region, username, password, from string, to []string, msg *mail.Messag
 	log.Printf("message id %s", *output.MessageId)
 
 	return nil
+}
+
+func createDestinations(to []string) []*string {
+	var destinations []*string
+	for _, dest := range to {
+		destinations = append(destinations, aws.String("To: " + dest))
+	}
+	return destinations
 }

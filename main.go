@@ -16,27 +16,23 @@ import (
 )
 
 var (
-	to                []string
-	from              string
-	recipientsFromMsg bool
-	ignoreDots        bool
+	to                = kingpin.Arg("to", "The list of recipients separated by comma.").Strings()
+	from              = kingpin.Flag("from", "The from address (ignored)").Short('f').String()
+	recipientsFromMsg = kingpin.Flag("to-from-message", "Read message for to (ignored)").Short('t').Bool()
+	ignoreDots        = kingpin.Flag("ignore-dots", "Ignore dots alone on lines by themselves in incoming messages (ignored).").Short('i').Bool()
 )
 
 func main() {
 
-	app := kingpin.New("skprmail", "A sendmail replacement for the Skpr hosting platform.")
-	app.Arg("to", "The list of recipients separated by comma.").StringsVar(&to)
-	app.Flag("from", "The from address (noop)").Short('f').StringVar(&from)
-	app.Flag("to-from-message", "Read message for to (ignored)").Short('t').BoolVar(&recipientsFromMsg)
-	app.Flag("ignore-dots", "Ignore dots alone on lines by themselves in incoming messages (ignored).").Short('i').BoolVar(&ignoreDots)
+	kingpin.Parse()
 
-	if from != "" {
+	if *from != "" {
 		log.Println("Ignoring flag -f ", from)
 	}
-	if !recipientsFromMsg {
+	if !*recipientsFromMsg {
 		log.Println("Ignoring flag -t")
 	}
-	if !ignoreDots {
+	if !*ignoreDots {
 		log.Println("Ignoring flag -i")
 	}
 
@@ -57,7 +53,7 @@ func main() {
 		log.Fatalf("failed to read message: %s", err)
 	}
 
-	err = send(region, username, password, from, to, msg)
+	err = send(region, username, password, from, *to, msg)
 	if err != nil {
 		log.Fatalf("failed to send: %s", err)
 	}
