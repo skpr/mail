@@ -17,7 +17,7 @@ import (
 const AccessKeyPrefix = "AKIA"
 
 // Send email via AWS SES.
-func Send(region, username, password, from string, msg *mail.Message) error {
+func Send(region, username, password, from string, to []string, msg *mail.Message) error {
 	config := &aws.Config{
 		Region:      aws.String(region),
 		Credentials: credentials.NewStaticCredentials(username, password, ""),
@@ -39,6 +39,7 @@ func Send(region, username, password, from string, msg *mail.Message) error {
 	}
 
 	input := &ses.SendRawEmailInput{
+		Destinations:         aws.StringSlice(to),
 		RawMessage: &ses.RawMessage{
 			Data: data,
 		},
