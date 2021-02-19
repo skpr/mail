@@ -28,6 +28,11 @@ func Send(region, username, password, from string, to []string, msg *mail.Messag
 		return err
 	}
 
+	if val, ok := msg.Header[mailutils.HeaderTo]; ok {
+		to = append(to, val...)
+	}
+	msg.Header[mailutils.HeaderTo] = to
+
 	err = mailutils.EnforceFrom(msg, from)
 	if err != nil {
 		return err
@@ -39,7 +44,6 @@ func Send(region, username, password, from string, to []string, msg *mail.Messag
 	}
 
 	input := &ses.SendRawEmailInput{
-		Destinations: createDestinations(to),
 		RawMessage: &ses.RawMessage{
 			Data: data,
 		},
@@ -54,12 +58,4 @@ func Send(region, username, password, from string, to []string, msg *mail.Messag
 	log.Printf("message id %s", *output.MessageId)
 
 	return nil
-}
-
-func createDestinations(to []string) []*string {
-	var destinations []*string
-	for _, dest := range to {
-		destinations = append(destinations, aws.String("To: " + dest))
-	}
-	return destinations
 }
