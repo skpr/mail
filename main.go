@@ -27,12 +27,12 @@ func main() {
 	kingpin.Parse()
 
 	if *from != "" {
-		log.Println("Ignoring flag -f ", from)
+		log.Println("Ignoring flag -f", *from)
 	}
-	if !*recipientsFromMsg {
+	if *recipientsFromMsg == true {
 		log.Println("Ignoring flag -t")
 	}
-	if !*ignoreDots {
+	if *ignoreDots == true {
 		log.Println("Ignoring flag -i")
 	}
 
