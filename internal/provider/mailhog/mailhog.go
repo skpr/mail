@@ -15,13 +15,14 @@ const (
 )
 
 // Send the email to Mailhog.
-func Send(msg *mail.Message) error {
+func Send(to []string, msg *mail.Message) error {
 	data, err := mailutils.MessageToBytes(msg)
 	if err != nil {
 		return err
 	}
+	if val, ok := msg.Header[mailutils.HeaderTo]; ok {
+		to = append(to, val...)
+	}
 
-	to := msg.Header.Get(mailutils.HeaderTo)
-
-	return smtp.SendMail(Addr, nil, From, []string{to}, data)
+	return smtp.SendMail(Addr, nil, From, to, data)
 }
