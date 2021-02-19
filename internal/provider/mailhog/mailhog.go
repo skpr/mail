@@ -20,8 +20,8 @@ func Send(to []string, msg *mail.Message) error {
 	if err != nil {
 		return err
 	}
-	if msgTo := msg.Header.Get(mailutils.HeaderTo); msgTo != "" {
-		to = append(to, msgTo)
+	if val, ok := msg.Header[mailutils.HeaderTo]; ok {
+		to = append(to, val...)
 	}
 
 	return smtp.SendMail(Addr, nil, From, to, data)
