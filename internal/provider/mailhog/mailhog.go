@@ -1,6 +1,8 @@
 package mailhog
 
 import (
+	"fmt"
+	"log"
 	"net/mail"
 	"net/smtp"
 
@@ -24,5 +26,11 @@ func Send(to []string, msg *mail.Message) error {
 		to = append(to, val...)
 	}
 
-	return smtp.SendMail(Addr, nil, From, to, data)
+	err = smtp.SendMail(Addr, nil, From, to, data)
+	if err != nil {
+		return fmt.Errorf("failed to send message via mailhig smtp %w", err)
+	}
+	log.Println("successfully sent message via mailhog smtp")
+
+	return nil
 }
