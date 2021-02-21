@@ -28,7 +28,7 @@ func Send(to []string, msg *mail.Message) error {
 
 	err = smtp.SendMail(Addr, nil, From, to, data)
 	if err != nil {
-		return fmt.Errorf("failed to send message via mailhig smtp %w", err)
+		return fmt.Errorf("failed to send message via mailhog smtp %w", err)
 	}
 	log.Println("successfully sent message via mailhog smtp")
 
