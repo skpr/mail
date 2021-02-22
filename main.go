@@ -50,12 +50,12 @@ func main() {
 
 	msg, err := mail.ReadMessage(os.Stdin)
 	if err != nil {
-		log.Fatalf("failed to read message: %s", err)
+		log.Fatalf("failed to read message from stdin: %s", err)
 	}
 
 	err = send(region, username, password, from, *to, msg)
 	if err != nil {
-		log.Fatalf("failed to send: %s", err)
+		log.Fatalf("failed to send message: %s", err)
 	}
 }
 

@@ -1,15 +1,16 @@
 package ses
 
 import (
+	"fmt"
 	"log"
 	"net/mail"
-
-	"github.com/skpr/mail/internal/mailutils"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
+
+	"github.com/skpr/mail/internal/mailutils"
 )
 
 // AccessKeyPrefix is used when identifying if a credential is used for AWS IAM authentication.
@@ -25,7 +26,7 @@ func Send(region, username, password, from string, to []string, msg *mail.Messag
 
 	sess, err := session.NewSession(config)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create new aws session: %w", err)
 	}
 
 	if val, ok := msg.Header[mailutils.HeaderTo]; ok {
@@ -35,12 +36,12 @@ func Send(region, username, password, from string, to []string, msg *mail.Messag
 
 	err = mailutils.EnforceFrom(msg, from)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to set from header: %w", err)
 	}
 
 	data, err := mailutils.MessageToBytes(msg)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to convert message to bytes: %w", err)
 	}
 
 	input := &ses.SendRawEmailInput{
@@ -52,10 +53,10 @@ func Send(region, username, password, from string, to []string, msg *mail.Messag
 
 	output, err := ses.New(sess).SendRawEmail(input)
 	if err != nil {
-		log.Fatalf("failed to send message: %s", err)
+		return fmt.Errorf("failed to send message via ses %w", err)
 	}
 
-	log.Printf("message id %s", *output.MessageId)
+	log.Printf("successfully sent message via ses with id %s", *output.MessageId)
 
 	return nil
 }
