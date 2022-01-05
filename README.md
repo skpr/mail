@@ -44,3 +44,7 @@ export SKPRMAIL_FROM_ADDRESS=admin@previousnext.com.au
  $ cat /tmp/test-email.txt | skprmail
  ```
  
+### Releasing
+
+
+
