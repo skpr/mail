@@ -46,5 +46,17 @@ export SKPRMAIL_FROM_ADDRESS=admin@previousnext.com.au
  
 ### Releasing
 
+Testing a release:
+
+```
+goreleaser release --rm-dist --snapshot --skip-publish
+```
+
+Releasing:
+
+```
+golreleaser
+```
+
 
 
