@@ -1,26 +1,32 @@
 version: 2.1
 
 workflows:
-  test:
+  build:
+    jobs: [ build ]
+  release:
     jobs:
-      - lint
-      - unit
-
+      - release:
+          context: org-global
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Only on tags formatted like v0.1.1
+              only: /^v\d+\.\d+\.\d+[\-a-z0-9]*$/
 jobs:
-  lint:
+  build:
     docker:
-      - image: golang:1.14
+      - image: golang:1.16
     working_directory: /go/src/github.com/skpr/mail
     steps:
       - checkout
       - run: |
           go get golang.org/x/lint/golint
           make lint
-
-  unit:
+      - run: make test
+  release:
     docker:
-      - image: golang:1.13
-    working_directory: /go/src/github.com/skpr/mail
+      - image: docker.io/goreleaser/goreleaser:latest
     steps:
       - checkout
-      - run: make test
+      - run: goreleaser

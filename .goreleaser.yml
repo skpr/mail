@@ -1,0 +1,18 @@
+# Documentation at http://goreleaser.com
+
+builds:
+  - binary: skprmail
+    env: [ CGO_ENABLED=0 ]
+    goos: [ linux, darwin ]
+    goarch: [ amd64, arm64 ]
+
+archives:
+  - replacements:
+      darwin: macOS
+    format: binary
+
+release:
+  prerelease: auto
+  github:
+    owner: skpr
+    name: mail
