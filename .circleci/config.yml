@@ -12,7 +12,7 @@ workflows:
               ignore: /.*/
             tags:
               # Only on tags formatted like v0.1.1
-              only: /^v\d+\.\d+\.\d+$/
+              only: /^v\d+\.\d+\.\d+[\-a-z0-9]*$/
 jobs:
   build:
     docker:
