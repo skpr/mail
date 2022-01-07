@@ -6,6 +6,9 @@ PROJECT=github.com/skpr/mail
 VERSION=$(shell git describe --tags --always)
 COMMIT=$(shell git rev-list -1 HEAD)
 
+PRIVATE_KEY=$(CURDIR)/keys/skpr.rsa.priv
+PUBLIC_KEY=$(CURDIR)/keys/skpr.rsa.pub
+
 # Builds the project.
 build:
 	gox -os='linux darwin' \
@@ -21,5 +24,11 @@ lint:
 # Run tests with coverage reporting.
 test:
 	go test -cover ./...
+
+# This is a step which is only used for local development.
+keys:
+	mkdir -p keys
+	openssl genrsa -out $(PRIVATE_KEY) 4096
+	openssl rsa -in $(PRIVATE_KEY) -pubout -out $(PUBLIC_KEY)
 
 .PHONY: *

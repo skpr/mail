@@ -1,4 +1,5 @@
 # Documentation at http://goreleaser.com
+project_name: skprmail
 
 builds:
   - binary: skprmail
@@ -10,6 +11,11 @@ archives:
   - replacements:
       darwin: macOS
     format: binary
+
+nfpms:
+  - description: A drop-in replacement for Sendmail which sends email via Amazon SES.
+    homepage: https://github.com/skpr/mail
+    formats: [ apk ]
 
 release:
   prerelease: auto
