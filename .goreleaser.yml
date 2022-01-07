@@ -13,8 +13,7 @@ archives:
     format: binary
 
 nfpms:
-  -
-    description: A drop-in replacement for Sendmail which sends email via Amazon SES.
+  - description: A drop-in replacement for Sendmail which sends email via Amazon SES.
     homepage: https://github.com/skpr/mail
     formats: [ apk ]
 
