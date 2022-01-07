@@ -1,4 +1,5 @@
 # Documentation at http://goreleaser.com
+project_name: skprmail
 
 builds:
   - binary: skprmail
@@ -11,6 +12,12 @@ archives:
       darwin: macOS
     format: binary
 
+nfpms:
+  - formats: [ apk ]
+    apk:
+      signature:
+        key_name: skpr
+        key_file: keys/skpr.rsa.priv
 release:
   prerelease: auto
   github:
