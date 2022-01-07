@@ -13,11 +13,11 @@ archives:
     format: binary
 
 nfpms:
-  - formats: [ apk ]
-    apk:
-      signature:
-        key_name: skpr
-        key_file: keys/skpr.rsa.priv
+  -
+    description: A drop-in replacement for Sendmail which sends email via Amazon SES.
+    homepage: https://github.com/skpr/mail
+    formats: [ apk ]
+
 release:
   prerelease: auto
   github:
