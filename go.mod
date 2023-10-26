@@ -1,18 +1,32 @@
 module github.com/skpr/mail
 
-go 1.13
+go 1.21.1
 
 require (
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
-	github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15 // indirect
-	github.com/aws/aws-sdk-go v1.25.47
-	github.com/pkg/errors v0.8.1 // indirect
-	github.com/skpr/go-config v0.0.0-20191204035903-a3b391813c43
-	github.com/skpr/operator v0.4.1
-	github.com/stretchr/testify v1.4.0
-	gopkg.in/alecthomas/kingpin.v2 v2.2.6
+	github.com/alecthomas/kingpin/v2 v2.3.2
+	github.com/aws/aws-sdk-go-v2 v1.21.2
+	github.com/aws/aws-sdk-go-v2/config v1.19.1
+	github.com/aws/aws-sdk-go-v2/credentials v1.13.43
+	github.com/aws/aws-sdk-go-v2/service/ses v1.16.10
+	github.com/skpr/go-config v0.0.0-20210803015120-ef4cd8061d76
+	github.com/stretchr/testify v1.8.4
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc
-	k8s.io/api v0.0.0-20191121015604-11707872ac1c // indirect
-	k8s.io/apimachinery v0.0.0-20191123233150-4c4803ed55e3 // indirect
-	sigs.k8s.io/controller-runtime v0.4.0 // indirect
+)
+
+require (
+	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.13.13 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.43 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.37 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.45 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.37 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.15.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.17.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.23.2 // indirect
+	github.com/aws/smithy-go v1.15.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

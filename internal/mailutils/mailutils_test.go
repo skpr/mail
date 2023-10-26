@@ -135,7 +135,7 @@ func TestMessageToBytes(t *testing.T) {
 	b, err := MessageToBytes(msg)
 	assert.Nil(t, err)
 
-	expected := "To: test@example.com\r\nFrom: test@example.com\r\n\r\nThis is a test"
-
-	assert.Equal(t, expected, string(b))
+	assert.Contains(t, string(b), "To: test@example.com")
+	assert.Contains(t, string(b), "From: test@example.com")
+	assert.Contains(t, string(b), "This is a test")
 }

@@ -7,12 +7,22 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/alecthomas/kingpin.v2"
+	"github.com/alecthomas/kingpin/v2"
 
 	skprconfig "github.com/skpr/go-config"
 	"github.com/skpr/mail/internal/provider/mailhog"
 	"github.com/skpr/mail/internal/provider/ses"
-	extensionsv1beta1 "github.com/skpr/operator/pkg/apis/extensions/v1beta1"
+)
+
+const (
+	// ConfigKeyUsername used when authenticating with SMTP on the Skpr hosting platform.
+	ConfigKeyUsername = "smtp.username"
+	// ConfigKeyPassword used when authenticating with SMTP on the Skpr hosting platform.
+	ConfigKeyPassword = "smtp.password"
+	// ConfigKeyRegion used when authenticating with SMTP on the Skpr hosting platform.
+	ConfigKeyRegion = "smtp.region"
+	// ConfigKeyFromAddress used for overriding the FROM address.
+	ConfigKeyFromAddress = "smtp.from.address"
 )
 
 var (
@@ -23,7 +33,6 @@ var (
 )
 
 func main() {
-
 	kingpin.Parse()
 
 	if *from != "" {
@@ -42,10 +51,10 @@ func main() {
 	}
 
 	var (
-		username = config.GetWithFallback(extensionsv1beta1.ConfigMapKeyUsername, os.Getenv("SKPRMAIL_USERNAME"))
-		password = config.GetWithFallback(extensionsv1beta1.SecretKeyPassword, os.Getenv("SKPRMAIL_PASSWORD"))
-		region   = config.GetWithFallback(extensionsv1beta1.ConfigMapKeyRegion, os.Getenv("SKPRMAIL_REGION"))
-		from     = config.GetWithFallback(extensionsv1beta1.ConfigMapKeyFromAddress, os.Getenv("SKPRMAIL_FROM"))
+		username = config.GetWithFallback(ConfigKeyUsername, os.Getenv("SKPRMAIL_USERNAME"))
+		password = config.GetWithFallback(ConfigKeyPassword, os.Getenv("SKPRMAIL_PASSWORD"))
+		region   = config.GetWithFallback(ConfigKeyRegion, os.Getenv("SKPRMAIL_REGION"))
+		from     = config.GetWithFallback(ConfigKeyFromAddress, os.Getenv("SKPRMAIL_FROM"))
 	)
 
 	msg, err := mail.ReadMessage(os.Stdin)
