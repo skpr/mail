@@ -10,7 +10,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 
 	skprconfig "github.com/skpr/go-config"
-	"github.com/skpr/mail/internal/provider/mailhog"
+	"github.com/skpr/mail/internal/provider/local"
 	"github.com/skpr/mail/internal/provider/ses"
 	extensionsv1beta1 "github.com/skpr/operator/pkg/apis/extensions/v1beta1"
 )
@@ -20,10 +20,12 @@ var (
 	from              = kingpin.Flag("from", "The from address (ignored)").Short('f').String()
 	recipientsFromMsg = kingpin.Flag("to-from-message", "Read message for to (ignored)").Short('t').Bool()
 	ignoreDots        = kingpin.Flag("ignore-dots", "Ignore dots alone on lines by themselves in incoming messages (ignored).").Short('i').Bool()
+
+	// Local mail provider.
+	cliLocalAddr = kingpin.Flag("local-addr", "Address used for sending mail to local server").Envar("SKPR_MAIL_LOCAL_ADDR").String()
 )
 
 func main() {
-
 	kingpin.Parse()
 
 	if *from != "" {
@@ -66,5 +68,5 @@ func send(region, username, password, from string, to []string, msg *mail.Messag
 		return ses.Send(region, username, password, from, to, msg)
 	}
 
-	return mailhog.Send(to, msg)
+	return local.Send(*cliLocalAddr, to, msg)
 }
