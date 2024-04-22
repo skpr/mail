@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
+	"github.com/aws/aws-sdk-go-v2/service/ses/types"
 
 	"github.com/skpr/mail/internal/mailutils"
 )
@@ -46,13 +47,13 @@ func Send(region, username, password, from string, to []string, msg *mail.Messag
 	}
 
 	input := &ses.SendRawEmailInput{
-		RawMessage: &ses.RawMessage{
+		RawMessage: &types.RawMessage{
 			Data: data,
 		},
 		Source: aws.String(from),
 	}
 
-	output, err := ses.New(cfg).SendRawEmail(input)
+	output, err := ses.NewFromConfig(cfg).SendRawEmail(context.TODO(), input)
 	if err != nil {
 		return fmt.Errorf("failed to send message via ses %w", err)
 	}
