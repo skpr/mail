@@ -7,32 +7,52 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/alecthomas/kingpin.v2"
+	kingpin "github.com/alecthomas/kingpin/v2"
 
 	skprconfig "github.com/skpr/go-config"
 	defaultprovider "github.com/skpr/mail/internal/provider/default"
 	"github.com/skpr/mail/internal/provider/ses"
-	extensionsv1beta1 "github.com/skpr/operator/pkg/apis/extensions/v1beta1"
+)
+
+const (
+	// EnvUsername used to configure authentication using an environment variable.
+	EnvUsername = "SKPRMAIL_USERNAME"
+	// EnvPassword used to configure authentication using an environment variable.
+	EnvPassword = "SKPRMAIL_PASSWORD"
+	// EnvRegion used to configure the region where SES resides using an environment variable.
+	EnvRegion = "SKPRMAIL_SES_REGION"
+	// EnvFrom used to override and set the FROM request for mail using an environment variable.
+	EnvFrom = "SKPRMAIL_FROM"
+	// ConfigUsername used to configure authentication using a Skpr config.
+	ConfigUsername = "smtp.username"
+	// ConfigPassword used to configure authentication using a Skpr config.
+	ConfigPassword = "smtp.password"
+	// ConfigRegion used to configure the region where SES resides using a Skpr config.
+	ConfigRegion = "smtp.region"
+	// ConfigFrom used to override and set the FROM request for mail using a Skpr config.
+	ConfigFrom = "smtp.from.address"
 )
 
 var (
-	to                = kingpin.Arg("to", "The list of recipients separated by comma.").Strings()
-	from              = kingpin.Flag("from", "The from address (ignored)").Short('f').String()
-	recipientsFromMsg = kingpin.Flag("to-from-message", "Read message for to (ignored)").Short('t').Bool()
-	ignoreDots        = kingpin.Flag("ignore-dots", "Ignore dots alone on lines by themselves in incoming messages (ignored).").Short('i').Bool()
+	cliTo                = kingpin.Arg("to", "The list of recipients separated by comma.").Strings()
+	cliFrom              = kingpin.Flag("from", "The from address (ignored)").Short('f').String()
+	cliRecipientsFromMsg = kingpin.Flag("to-from-message", "Read message for to (ignored)").Short('t').Bool()
+	cliIgnoreDots        = kingpin.Flag("ignore-dots", "Ignore dots alone on lines by themselves in incoming messages (ignored).").Short('i').Bool()
 )
 
 func main() {
 
 	kingpin.Parse()
 
-	if *from != "" {
-		log.Println("Ignoring flag -f", *from)
+	if *cliFrom != "" {
+		log.Println("Ignoring flag -f", *cliFrom)
 	}
-	if *recipientsFromMsg == true {
+
+	if *cliRecipientsFromMsg {
 		log.Println("Ignoring flag -t")
 	}
-	if *ignoreDots == true {
+
+	if *cliIgnoreDots {
 		log.Println("Ignoring flag -i")
 	}
 
@@ -42,10 +62,10 @@ func main() {
 	}
 
 	var (
-		username = config.GetWithFallback(extensionsv1beta1.ConfigMapKeyUsername, os.Getenv("SKPRMAIL_USERNAME"))
-		password = config.GetWithFallback(extensionsv1beta1.SecretKeyPassword, os.Getenv("SKPRMAIL_PASSWORD"))
-		region   = config.GetWithFallback(extensionsv1beta1.ConfigMapKeyRegion, os.Getenv("SKPRMAIL_REGION"))
-		from     = config.GetWithFallback(extensionsv1beta1.ConfigMapKeyFromAddress, os.Getenv("SKPRMAIL_FROM"))
+		username = config.GetWithFallback(ConfigUsername, os.Getenv(EnvUsername))
+		password = config.GetWithFallback(ConfigPassword, os.Getenv(EnvPassword))
+		region   = config.GetWithFallback(ConfigRegion, os.Getenv(EnvRegion))
+		from     = config.GetWithFallback(ConfigFrom, os.Getenv(EnvFrom))
 	)
 
 	msg, err := mail.ReadMessage(os.Stdin)
@@ -53,7 +73,7 @@ func main() {
 		log.Fatalf("failed to read message from stdin: %s", err)
 	}
 
-	err = send(region, username, password, from, *to, msg)
+	err = send(region, username, password, from, *cliTo, msg)
 	if err != nil {
 		log.Fatalf("failed to send message: %s", err)
 	}

@@ -1,14 +1,15 @@
 package ses
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/mail"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ses"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/ses"
 
 	"github.com/skpr/mail/internal/mailutils"
 )
@@ -19,14 +20,14 @@ const AccessKeyPrefix = "AKIA"
 
 // Send email via AWS SES.
 func Send(region, username, password, from string, to []string, msg *mail.Message) error {
-	config := &aws.Config{
-		Region:      aws.String(region),
-		Credentials: credentials.NewStaticCredentials(username, password, ""),
-	}
-
-	sess, err := session.NewSession(config)
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithRegion(region),
+		config.WithCredentialsProvider(
+			credentials.NewStaticCredentialsProvider(username, password, ""),
+		),
+	)
 	if err != nil {
-		return fmt.Errorf("failed to create new aws session: %w", err)
+		return fmt.Errorf("failed to get aws config: %w", err)
 	}
 
 	if val, ok := msg.Header[mailutils.HeaderTo]; ok {
@@ -51,7 +52,7 @@ func Send(region, username, password, from string, to []string, msg *mail.Messag
 		Source: aws.String(from),
 	}
 
-	output, err := ses.New(sess).SendRawEmail(input)
+	output, err := ses.New(cfg).SendRawEmail(input)
 	if err != nil {
 		return fmt.Errorf("failed to send message via ses %w", err)
 	}
