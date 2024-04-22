@@ -12,9 +12,9 @@ import (
 
 const (
 	// EnvAddr used to configure the address where mail is sent.
-	EnvAddr = "SKPR_MAIL_ADDR"
+	EnvAddr = "SKPRMAIL_ADDR"
 	// EnvFrom used to configure the FROM address appled to mail.
-	EnvFrom = "SKPR_MAIL_FROM"
+	EnvFrom = "SKPRMAIL_FROM"
 	// FallbackAddr where mail will be forwarded to.
 	FallbackAddr = "mail:1025"
 	// FallbackFrom address which will be applied to email.
