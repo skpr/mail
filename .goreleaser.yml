@@ -9,9 +9,8 @@ builds:
     ldflags: '-extldflags "-static"'
 
 archives:
-  - replacements:
-      darwin: macOS
-    format: binary
+  - format: binary
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ if eq .Os "darwin" }}macOS{{ else }}{{ .Os }}{{ end }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
 
 nfpms:
   - description: A drop-in replacement for Sendmail which sends email via Amazon SES.
