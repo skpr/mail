@@ -10,7 +10,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 
 	skprconfig "github.com/skpr/go-config"
-	"github.com/skpr/mail/internal/provider/mailhog"
+	defaultprovider "github.com/skpr/mail/internal/provider/default"
 	"github.com/skpr/mail/internal/provider/ses"
 	extensionsv1beta1 "github.com/skpr/operator/pkg/apis/extensions/v1beta1"
 )
@@ -66,5 +66,5 @@ func send(region, username, password, from string, to []string, msg *mail.Messag
 		return ses.Send(region, username, password, from, to, msg)
 	}
 
-	return mailhog.Send(to, msg)
+	return defaultprovider.Send(to, msg)
 }
