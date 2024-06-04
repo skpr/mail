@@ -57,7 +57,7 @@ func main() {
 	}
 
 	config, err := skprconfig.Load()
-	if err != nil && !errors.Is(err, os.ErrNotExist) {
+	if err != nil && !errors.Is(err, skprconfig.ErrNotFound) {
 		panic(err)
 	}
 
