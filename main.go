@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"log"
 	"net/mail"
 	"os"
 	"strings"
+	"time"
 
 	kingpin "github.com/alecthomas/kingpin/v2"
 
@@ -81,10 +83,14 @@ func main() {
 
 // Send email based on parameters.
 func send(region, username, password, from string, to []string, msg *mail.Message) error {
+	// setup context with timeout
+	queryCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
 	// Use AWS if the credentials match what we would expect for IAM.
 	if strings.HasPrefix(username, ses.AccessKeyPrefix) {
-		return ses.Send(region, username, password, from, to, msg)
+		return ses.Send(queryCtx, region, username, password, from, to, msg)
 	}
 
-	return defaultprovider.Send(to, msg)
+	return defaultprovider.Send(queryCtx, to, msg)
 }

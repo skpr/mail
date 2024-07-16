@@ -1,11 +1,14 @@
 package local
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/mail"
 	"net/smtp"
 	"os"
+
+	"golang.org/x/sync/errgroup"
 
 	"github.com/skpr/mail/internal/mailutils"
 )
@@ -16,13 +19,15 @@ const (
 	// EnvFrom used to configure the FROM address appled to mail.
 	EnvFrom = "SKPRMAIL_FROM"
 	// FallbackAddr where mail will be forwarded to.
-	FallbackAddr = "mail:1025"
+	FallbackAddr = "localhost:1025"
 	// FallbackFrom address which will be applied to email.
 	FallbackFrom = "skprmail"
+	// // FallbackSMTPPort is the port used to connect to the SMTP server.
+	// FallbackSMTPPort = "1025"
 )
 
 // Send the email to Mailhog.
-func Send(to []string, msg *mail.Message) error {
+func Send(ctx context.Context, to []string, msg *mail.Message) error {
 	data, err := mailutils.MessageToBytes(msg)
 	if err != nil {
 		return err
@@ -38,16 +43,89 @@ func Send(to []string, msg *mail.Message) error {
 	}
 
 	from := os.Getenv(EnvFrom)
-	if addr == "" {
-		addr = FallbackFrom
+	if from == "" {
+		from = FallbackFrom
 	}
 
-	err = smtp.SendMail(addr, nil, from, to, data)
+	// smtpPort := os.Getenv("SKPRMAIL_SMTP_PORT")
+	// if smtpPort == "" {
+	// 	smtpPort = FallbackSMTPPort
+	// }
+
+	// tlsConfig := &tls.Config{
+	// 	InsecureSkipVerify: true,
+	// 	ServerName:         "",
+	// }
+
+	client, err := smtp.Dial(addr)
 	if err != nil {
-		return fmt.Errorf("failed to send message via mailhog smtp %w", err)
+		return fmt.Errorf("failed to dial smtp server %w", err)
 	}
+
+	// Connect to the SMTP server
+	// @todo, Should reuse addr and make the port configurable.
+	// client, err := smtp.NewClient(conn, addr)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to dial mailhog smtp %w", err)
+	// }
+
+	// if err = client.Auth(auth); err != nil {
+	// 	log.Panic(err)
+	// }
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	eg := errgroup.Group{}
+
+	// Sending the email.
+	eg.Go(func() error {
+		defer cancel()
+
+		if err = client.Mail(from); err != nil {
+			return fmt.Errorf("failed to add from address %w", err)
+		}
+
+		for _, recipient := range to {
+			err = client.Rcpt(recipient)
+			if err != nil {
+				return fmt.Errorf("failed to add recipient: %w", err)
+			}
+		}
+
+		wr, err := client.Data()
+		if err != nil {
+			return fmt.Errorf("failed to initiate writer: %w", err)
+		}
+
+		_, err = wr.Write([]byte(data))
+		if err != nil {
+			log.Panic(err)
+		}
+
+		// @todo, Do the sending.
+
+		return nil
+	})
+
+	// Closing the client.
+	eg.Go(func() error {
+		<-ctx.Done()
+
+		// err := client.Close()
+		// if err != nil {
+		// 	return fmt.Errorf("failed to close: %w", err)
+		// }
+
+		err = client.Quit()
+		if err != nil {
+			return fmt.Errorf("failed to quit: %w", err)
+		}
+
+		return nil
+	})
 
 	log.Println("successfully sent message via mailhog smtp")
 
-	return nil
+	return eg.Wait()
 }
