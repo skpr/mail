@@ -84,7 +84,7 @@ func main() {
 // Send email based on parameters.
 func send(region, username, password, from string, to []string, msg *mail.Message) error {
 	// setup context with timeout
-	queryCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	queryCtx, cancel := context.WithTimeout(context.TODO(), 10*time.Second)
 	defer cancel()
 
 	// Use AWS if the credentials match what we would expect for IAM.

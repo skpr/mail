@@ -21,7 +21,7 @@ const (
 	// FallbackAddr where mail will be forwarded to.
 	FallbackAddr = "localhost:1025"
 	// FallbackFrom address which will be applied to email.
-	FallbackFrom = "skprmail"
+	FallbackFrom = "skprmail@skpprmail.com"
 	// // FallbackSMTPPort is the port used to connect to the SMTP server.
 	// FallbackSMTPPort = "1025"
 )
@@ -112,15 +112,15 @@ func Send(ctx context.Context, to []string, msg *mail.Message) error {
 	eg.Go(func() error {
 		<-ctx.Done()
 
-		// err := client.Close()
-		// if err != nil {
-		// 	return fmt.Errorf("failed to close: %w", err)
-		// }
-
-		err = client.Quit()
+		err := client.Close()
 		if err != nil {
-			return fmt.Errorf("failed to quit: %w", err)
+			return fmt.Errorf("failed to close: %w", err)
 		}
+
+		// err = client.Quit()
+		// if err != nil {
+		// 	return fmt.Errorf("failed to quit: %w", err)
+		// }
 
 		return nil
 	})
