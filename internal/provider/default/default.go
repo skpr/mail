@@ -7,8 +7,7 @@ import (
 	"net/mail"
 	"net/smtp"
 	"os"
-
-	"golang.org/x/sync/errgroup"
+	"time"
 
 	"github.com/skpr/mail/internal/mailutils"
 )
@@ -47,6 +46,21 @@ func Send(ctx context.Context, to []string, msg *mail.Message) error {
 		from = FallbackFrom
 	}
 
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	go func() {
+		for {
+			time.Sleep(1 * time.Second)
+			fmt.Printf("sleeping for 1 second")
+			select {
+			case <-ctx.Done():
+				fmt.Printf("cancelling")
+				os.Exit(1)
+			}
+		}
+	}()
+
 	// smtpPort := os.Getenv("SKPRMAIL_SMTP_PORT")
 	// if smtpPort == "" {
 	// 	smtpPort = FallbackSMTPPort
@@ -56,7 +70,7 @@ func Send(ctx context.Context, to []string, msg *mail.Message) error {
 	// 	InsecureSkipVerify: true,
 	// 	ServerName:         "",
 	// }
-
+	fmt.Printf("dialing smtp server %s", addr)
 	client, err := smtp.Dial(addr)
 	if err != nil {
 		return fmt.Errorf("failed to dial smtp server %w", err)
@@ -73,59 +87,70 @@ func Send(ctx context.Context, to []string, msg *mail.Message) error {
 	// 	log.Panic(err)
 	// }
 
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	eg := errgroup.Group{}
+	// eg := errgroup.Group{}
 
 	// Sending the email.
-	eg.Go(func() error {
-		defer cancel()
+	// eg.Go(func() error {
+	// defer cancel()
 
-		if err = client.Mail(from); err != nil {
-			return fmt.Errorf("failed to add from address %w", err)
-		}
+	if err = client.Mail(from); err != nil {
+		return fmt.Errorf("failed to add from address %w", err)
+	}
 
-		for _, recipient := range to {
-			err = client.Rcpt(recipient)
-			if err != nil {
-				return fmt.Errorf("failed to add recipient: %w", err)
-			}
-		}
-
-		wr, err := client.Data()
+	for _, recipient := range to {
+		err = client.Rcpt(recipient)
 		if err != nil {
-			return fmt.Errorf("failed to initiate writer: %w", err)
+			return fmt.Errorf("failed to add recipient: %w", err)
 		}
+	}
 
-		_, err = wr.Write([]byte(data))
-		if err != nil {
-			log.Panic(err)
-		}
+	wr, err := client.Data()
+	if err != nil {
+		return fmt.Errorf("failed to initiate writer: %w", err)
+	}
 
-		// @todo, Do the sending.
+	log.Println("writing message to mailhog smtp")
+	_, err = wr.Write([]byte(data))
+	if err != nil {
+		log.Panic(err)
+	}
+	log.Println("successfully wrote message to mailhog smtp")
+	err = client.Close()
+	if err != nil {
+		return fmt.Errorf("failed to close: %w", err)
+	}
+	log.Println("successfully sent message via mailhog smtp")
+	// time.Sleep(20 * time.Second)
 
-		return nil
-	})
+	return nil
+	// @todo, Do the sending.
+
+	// return nil
+	// })
 
 	// Closing the client.
-	eg.Go(func() error {
-		<-ctx.Done()
+	// go func() error {
+	// for {
+	// 	select {
+	// 	case <-ctx.Done():
+	// 		log.Println("email timed out due to no response from mailhog smtp within 30 seconds")
+	// 		err := client.Close()
+	// 		if err != nil {
+	// 			return fmt.Errorf("failed to close: %w", err)
+	// 		}
+	// 		return nil
+	// 	}
+	// }
 
-		err := client.Close()
-		if err != nil {
-			return fmt.Errorf("failed to close: %w", err)
-		}
+	// err = client.Quit()
+	// if err != nil {
+	// 	return fmt.Errorf("failed to quit: %w", err)
+	// }
 
-		// err = client.Quit()
-		// if err != nil {
-		// 	return fmt.Errorf("failed to quit: %w", err)
-		// }
+	// return nil
+	// }
 
-		return nil
-	})
+	// log.Println("successfully sent message via mailhog smtp")
 
-	log.Println("successfully sent message via mailhog smtp")
-
-	return eg.Wait()
+	// return eg.Wait()
 }

@@ -84,7 +84,7 @@ func main() {
 // Send email based on parameters.
 func send(region, username, password, from string, to []string, msg *mail.Message) error {
 	// setup context with timeout
-	queryCtx, cancel := context.WithTimeout(context.TODO(), 10*time.Second)
+	queryCtx, cancel := context.WithTimeout(context.Background(), time.Duration(30*time.Second))
 	defer cancel()
 
 	// Use AWS if the credentials match what we would expect for IAM.
@@ -92,5 +92,13 @@ func send(region, username, password, from string, to []string, msg *mail.Messag
 		return ses.Send(queryCtx, region, username, password, from, to, msg)
 	}
 
+	// go func() {
+	// 	for {
+	// 		time.Sleep(1 * time.Second)
+	// 		<-queryCtx.Done()
+	// 		fmt.Printf("failed to send message due to timeout: %s", queryCtx.Err())
+	// 		os.Exit(1)
+	// 	}
+	// }()
 	return defaultprovider.Send(queryCtx, to, msg)
 }
