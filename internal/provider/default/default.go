@@ -51,11 +51,9 @@ func Send(ctx context.Context, to []string, msg *mail.Message) error {
 		for {
 			time.Sleep(1 * time.Second)
 			fmt.Printf("sleeping for 1 second")
-			select {
-			case <-ctx.Done():
-				fmt.Printf("cancelling")
-				os.Exit(1)
-			}
+			<-ctx.Done()
+			fmt.Printf("cancelling")
+			os.Exit(1)
 		}
 	}()
 
