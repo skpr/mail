@@ -21,8 +21,6 @@ const (
 	FallbackAddr = "localhost:1025"
 	// FallbackFrom address which will be applied to email.
 	FallbackFrom = "skprmail@skpprmail.com"
-	// // FallbackSMTPPort is the port used to connect to the SMTP server.
-	// FallbackSMTPPort = "1025"
 )
 
 // Send the email to Mailhog.
@@ -61,37 +59,11 @@ func Send(ctx context.Context, to []string, msg *mail.Message) error {
 		}
 	}()
 
-	// smtpPort := os.Getenv("SKPRMAIL_SMTP_PORT")
-	// if smtpPort == "" {
-	// 	smtpPort = FallbackSMTPPort
-	// }
-
-	// tlsConfig := &tls.Config{
-	// 	InsecureSkipVerify: true,
-	// 	ServerName:         "",
-	// }
 	fmt.Printf("dialing smtp server %s", addr)
 	client, err := smtp.Dial(addr)
 	if err != nil {
 		return fmt.Errorf("failed to dial smtp server %w", err)
 	}
-
-	// Connect to the SMTP server
-	// @todo, Should reuse addr and make the port configurable.
-	// client, err := smtp.NewClient(conn, addr)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to dial mailhog smtp %w", err)
-	// }
-
-	// if err = client.Auth(auth); err != nil {
-	// 	log.Panic(err)
-	// }
-
-	// eg := errgroup.Group{}
-
-	// Sending the email.
-	// eg.Go(func() error {
-	// defer cancel()
 
 	if err = client.Mail(from); err != nil {
 		return fmt.Errorf("failed to add from address %w", err)
@@ -123,34 +95,4 @@ func Send(ctx context.Context, to []string, msg *mail.Message) error {
 	// time.Sleep(20 * time.Second)
 
 	return nil
-	// @todo, Do the sending.
-
-	// return nil
-	// })
-
-	// Closing the client.
-	// go func() error {
-	// for {
-	// 	select {
-	// 	case <-ctx.Done():
-	// 		log.Println("email timed out due to no response from mailhog smtp within 30 seconds")
-	// 		err := client.Close()
-	// 		if err != nil {
-	// 			return fmt.Errorf("failed to close: %w", err)
-	// 		}
-	// 		return nil
-	// 	}
-	// }
-
-	// err = client.Quit()
-	// if err != nil {
-	// 	return fmt.Errorf("failed to quit: %w", err)
-	// }
-
-	// return nil
-	// }
-
-	// log.Println("successfully sent message via mailhog smtp")
-
-	// return eg.Wait()
 }
