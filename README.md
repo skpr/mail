@@ -56,7 +56,7 @@ export SKPRMAIL_FROM_ADDRESS=admin@previousnext.com.au
     And here goes the e-mail body, test test test..
     ```
 - `export SKPRMAIL_ADDR="localhost:1025"` (to point skprmail to our debug server)
-- Start the smtp server in a new terminal window from `utils/smtp-debug-server/smtp-debug-server` (please note that the smtp server has a delay of 45s during startup, enabling us to test timeout on skprmail)
+- Start the smtp server in a new terminal window from `utils/smtp-debug-server/cmd/smtp-debug-server` by running `go run main.go` from that location (please note that the smtp server has a delay of 45s during startup set at `utils/smtp-debug-server/server.go:212`, enabling us to test timeout on skprmail)
 - Run `$ cat /tmp/test-email.txt | bin/skprmail_linux_amd64 --timeout 10s` to test a 10 second timeout or run `$ cat /tmp/test-email.txt | bin/skprmail_linux_amd64` for a default 30s timeout. (please run the test command within 10 seconds of starting the debug server)
 - Timeout error `Contacting the local smtp server timed out, cancelling...` will confirm timeout was engaged. 
 - Once the SMTP server starts after 45s with log message
