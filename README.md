@@ -25,15 +25,15 @@ The app knows how skpr mounts configuration into the container (via the mount at
 * AWS Region `SKPRMAIL_AWS_REGION`
 * From Address `SKPRMAIL_FROM_ADDRESS`
  
- ## Testing Locally
+## Testing Locally
    
- Create a file `/tmp/test-mail.txt` with the following contents. Adjust from/to address to those which are verified in SES.
+Create a file `/tmp/test-mail.txt` with the following contents. Adjust from/to address to those which are verified in SES.
  ```
- To: my@email.com
- Subject: sendmail test two
- From: me@myserver.com
- 
- And here goes the e-mail body, test test test..
+FROM:me@myserver.com
+To: my@email.com
+Subject: sendmail test two
+
+And here goes the e-mail body, test test test..
  ```
  
  ```bash
@@ -43,8 +43,56 @@ export SKPRMAIL_AWS_REGION=us-east-1
 export SKPRMAIL_FROM_ADDRESS=admin@previousnext.com.au
  $ cat /tmp/test-email.txt | skprmail
  ```
+
+### Testing with local smtp server
+
+- Create a fresh build of the binary using `make build`
+- Create a file `/tmp/test-mail.txt` with the following contents. Adjust from/to address to those which are verified in SES.
+    ```
+    FROM:me@myserver.com
+    To: my@email.com
+    Subject: sendmail test two
+
+    And here goes the e-mail body, test test test..
+    ```
+- `export SKPRMAIL_ADDR="localhost:1025"` (to point skprmail to our debug server)
+- Start the smtp server in a new terminal window from `utils/smtp-debug-server/cmd/smtp-debug-server` by running `go run main.go` from that location (please note that the smtp server has a delay of 45s during startup set at `utils/smtp-debug-server/server.go:212`, enabling us to test timeout on skprmail)
+- Run `$ cat /tmp/test-email.txt | bin/skprmail_linux_amd64 --timeout 10s` to test a 10 second timeout or run `$ cat /tmp/test-email.txt | bin/skprmail_linux_amd64` for a default 30s timeout. (please run the test command within 10 seconds of starting the debug server)
+- Timeout error `Contacting the local smtp server timed out, cancelling...` will confirm timeout was engaged. 
+- Once the SMTP server starts after 45s with log message
+    ```
+    2024/07/25 07:29:21 Starting SMTP server at 127.0.0.1:1025
+    220 localhost ESMTP Service Ready
+    ```
+    You can test delivery of the email.
+    ```
+    2024/07/25 08:05:06 Starting SMTP server at 127.0.0.1:1025
+    220 localhost ESMTP Service Ready
+    EHLO localhost
+    250-Hello localhost
+    250-PIPELINING
+    250-8BITMIME
+    250-ENHANCEDSTATUSCODES
+    250-CHUNKING
+    250 SIZE
+    MAIL FROM:<mail@skpr.localhost> BODY=8BITMIME
+    250 2.0.0 Roger, accepting mail from <mail@skpr.localhost>
+    RCPT TO:<my@email.com>
+    250 2.0.0 I'll make sure <my@email.com> gets this
+    DATA
+    354 Go ahead. End your data with <CR><LF>.<CR><LF>
+    From: me@myserver.com
+    To: my@email.com
+    Subject: sendmail test two
+
+    And here goes the e-mail body, test test test..
+    .
+    250 2.0.0 OK: queued
+    QUIT
+    221 2.0.0 Bye
+    ```
  
-### Releasing
+## Releasing
 
 Testing a release:
 

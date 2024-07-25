@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"log"
 	"net/mail"
@@ -38,6 +39,7 @@ var (
 	cliFrom              = kingpin.Flag("from", "The from address (ignored)").Short('f').String()
 	cliRecipientsFromMsg = kingpin.Flag("to-from-message", "Read message for to (ignored)").Short('t').Bool()
 	cliIgnoreDots        = kingpin.Flag("ignore-dots", "Ignore dots alone on lines by themselves in incoming messages (ignored).").Short('i').Bool()
+	cliTimeout           = kingpin.Flag("timeout", "How long to wait before timing out and exiting.").Default("30s").Duration()
 )
 
 func main() {
@@ -73,18 +75,21 @@ func main() {
 		log.Fatalf("failed to read message from stdin: %s", err)
 	}
 
-	err = send(region, username, password, from, *cliTo, msg)
+	ctx, cancel := context.WithTimeout(context.Background(), *cliTimeout)
+	defer cancel()
+
+	err = send(ctx, region, username, password, from, *cliTo, msg)
 	if err != nil {
 		log.Fatalf("failed to send message: %s", err)
 	}
 }
 
 // Send email based on parameters.
-func send(region, username, password, from string, to []string, msg *mail.Message) error {
+func send(ctx context.Context, region, username, password, from string, to []string, msg *mail.Message) error {
 	// Use AWS if the credentials match what we would expect for IAM.
 	if strings.HasPrefix(username, ses.AccessKeyPrefix) {
-		return ses.Send(region, username, password, from, to, msg)
+		return ses.Send(ctx, region, username, password, from, to, msg)
 	}
 
-	return defaultprovider.Send(to, msg)
+	return defaultprovider.Send(ctx, to, msg)
 }

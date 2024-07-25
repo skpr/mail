@@ -1,6 +1,7 @@
 package local
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/mail"
@@ -18,11 +19,22 @@ const (
 	// FallbackAddr where mail will be forwarded to.
 	FallbackAddr = "mail:1025"
 	// FallbackFrom address which will be applied to email.
-	FallbackFrom = "skprmail"
+	FallbackFrom = "mail@skpr.localhost"
 )
 
 // Send the email to Mailhog.
-func Send(to []string, msg *mail.Message) error {
+func Send(ctx context.Context, to []string, msg *mail.Message) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	// The GO SMTP package is difficult to cancel using context.
+	// This provider should only ever be used for local development tasks.
+	go func() {
+		<-ctx.Done()
+		fmt.Printf("Contacting the local smtp server timed out, cancelling...\n")
+		os.Exit(1)
+	}()
+
 	data, err := mailutils.MessageToBytes(msg)
 	if err != nil {
 		return err
@@ -38,16 +50,14 @@ func Send(to []string, msg *mail.Message) error {
 	}
 
 	from := os.Getenv(EnvFrom)
-	if addr == "" {
-		addr = FallbackFrom
+	if from == "" {
+		from = FallbackFrom
 	}
 
 	err = smtp.SendMail(addr, nil, from, to, data)
 	if err != nil {
 		return fmt.Errorf("failed to send message via mailhog smtp %w", err)
 	}
-
 	log.Println("successfully sent message via mailhog smtp")
-
 	return nil
 }
