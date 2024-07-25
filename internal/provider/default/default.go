@@ -7,7 +7,6 @@ import (
 	"net/mail"
 	"net/smtp"
 	"os"
-	"time"
 
 	"github.com/skpr/mail/internal/mailutils"
 )
@@ -18,13 +17,24 @@ const (
 	// EnvFrom used to configure the FROM address appled to mail.
 	EnvFrom = "SKPRMAIL_FROM"
 	// FallbackAddr where mail will be forwarded to.
-	FallbackAddr = "localhost:1025"
+	FallbackAddr = "mail:1025"
 	// FallbackFrom address which will be applied to email.
-	FallbackFrom = "skprmail@skpprmail.com"
+	FallbackFrom = "mail@skpr.localhost"
 )
 
 // Send the email to Mailhog.
 func Send(ctx context.Context, to []string, msg *mail.Message) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	// The GO SMTP package is difficult to cancel using context.
+	// This provider should only ever be used for local development tasks.
+	go func() {
+		<-ctx.Done()
+		fmt.Printf("Contacting the local smtp server timed out, cancelling...\n")
+		os.Exit(1)
+	}()
+
 	data, err := mailutils.MessageToBytes(msg)
 	if err != nil {
 		return err
@@ -44,53 +54,10 @@ func Send(ctx context.Context, to []string, msg *mail.Message) error {
 		from = FallbackFrom
 	}
 
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	go func() {
-		for {
-			time.Sleep(1 * time.Second)
-			fmt.Printf("sleeping for 1 second")
-			<-ctx.Done()
-			fmt.Printf("cancelling")
-			os.Exit(1)
-		}
-	}()
-
-	fmt.Printf("dialing smtp server %s", addr)
-	client, err := smtp.Dial(addr)
+	err = smtp.SendMail(addr, nil, from, to, data)
 	if err != nil {
-		return fmt.Errorf("failed to dial smtp server %w", err)
-	}
-
-	if err = client.Mail(from); err != nil {
-		return fmt.Errorf("failed to add from address %w", err)
-	}
-
-	for _, recipient := range to {
-		err = client.Rcpt(recipient)
-		if err != nil {
-			return fmt.Errorf("failed to add recipient: %w", err)
-		}
-	}
-
-	wr, err := client.Data()
-	if err != nil {
-		return fmt.Errorf("failed to initiate writer: %w", err)
-	}
-
-	log.Println("writing message to mailhog smtp")
-	_, err = wr.Write([]byte(data))
-	if err != nil {
-		log.Panic(err)
-	}
-	log.Println("successfully wrote message to mailhog smtp")
-	err = client.Close()
-	if err != nil {
-		return fmt.Errorf("failed to close: %w", err)
+		return fmt.Errorf("failed to send message via mailhog smtp %w", err)
 	}
 	log.Println("successfully sent message via mailhog smtp")
-	// time.Sleep(20 * time.Second)
-
 	return nil
 }
