@@ -1,6 +1,7 @@
 package local
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/mail"
@@ -22,7 +23,15 @@ const (
 )
 
 // Send the email to Mailhog.
-func Send(to []string, msg *mail.Message) error {
+func Send(ctx context.Context, to []string, msg *mail.Message) error {
+	// The GO SMTP package is difficult to cancel using context.
+	// This provider should only ever be used for local development tasks.
+	go func() {
+		<-ctx.Done()
+		fmt.Println("Context cancelled")
+		os.Exit(1)
+	}()
+
 	data, err := mailutils.MessageToBytes(msg)
 	if err != nil {
 		return err
@@ -38,7 +47,7 @@ func Send(to []string, msg *mail.Message) error {
 	}
 
 	from := os.Getenv(EnvFrom)
-	if addr == "" {
+	if from == "" {
 		addr = FallbackFrom
 	}
 
