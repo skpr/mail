@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"errors"
-	kingpin "github.com/alecthomas/kingpin/v2"
 	"log"
 	"net/mail"
 	"os"
 	"strings"
 
+	kingpin "github.com/alecthomas/kingpin/v2"
 	skprconfig "github.com/skpr/go-config"
+	
 	defaultprovider "github.com/skpr/mail/internal/provider/default"
 	"github.com/skpr/mail/internal/provider/ses"
 )
