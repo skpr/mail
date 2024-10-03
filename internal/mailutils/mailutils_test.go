@@ -123,10 +123,10 @@ func TestMessageToBytes(t *testing.T) {
 	msg := &mail.Message{
 		Header: mail.Header{
 			HeaderTo: []string{
-				"test@example.com",
+				"test_to@example.com",
 			},
 			HeaderFrom: []string{
-				"test@example.com",
+				"test_from@example.com",
 			},
 		},
 		Body: strings.NewReader("This is a test"),
@@ -135,7 +135,7 @@ func TestMessageToBytes(t *testing.T) {
 	b, err := MessageToBytes(msg)
 	assert.Nil(t, err)
 
-	expected := "To: test@example.com\r\nFrom: test@example.com\r\n\r\nThis is a test"
+	expected := "To: test_to@example.com\r\nFrom: test_from@example.com\r\n\r\nThis is a test"
 
 	assert.Equal(t, expected, string(b))
 }
