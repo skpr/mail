@@ -48,7 +48,7 @@ func Send(ctx context.Context, to []string, msg *mail.Message) error {
 
 	from := os.Getenv(EnvFrom)
 	if from == "" {
-		addr = FallbackFrom
+		from = FallbackFrom
 	}
 
 	err = smtp.SendMail(addr, nil, from, to, data)
