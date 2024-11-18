@@ -13,10 +13,13 @@ import (
 
 // Given an identity (an email address or a domain), sets whether Amazon SES
 // includes the original email headers in the Amazon Simple Notification Service
-// (Amazon SNS) notifications of a specified type. You can execute this operation
-// no more than once per second. For more information about using notifications
-// with Amazon SES, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications.html)
-// .
+// (Amazon SNS) notifications of a specified type.
+//
+// You can execute this operation no more than once per second.
+//
+// For more information about using notifications with Amazon SES, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications.html
 func (c *Client) SetIdentityHeadersInNotificationsEnabled(ctx context.Context, params *SetIdentityHeadersInNotificationsEnabledInput, optFns ...func(*Options)) (*SetIdentityHeadersInNotificationsEnabledOutput, error) {
 	if params == nil {
 		params = &SetIdentityHeadersInNotificationsEnabledInput{}
@@ -34,16 +37,18 @@ func (c *Client) SetIdentityHeadersInNotificationsEnabled(ctx context.Context, p
 
 // Represents a request to set whether Amazon SES includes the original email
 // headers in the Amazon SNS notifications of a specified type. For information
-// about notifications, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications-sns.html)
-// .
+// about notifications, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications-sns.html
 type SetIdentityHeadersInNotificationsEnabledInput struct {
 
 	// Sets whether Amazon SES includes the original email headers in Amazon SNS
 	// notifications of the specified notification type. A value of true specifies
 	// that Amazon SES includes headers in notifications, and a value of false
-	// specifies that Amazon SES does not include headers in notifications. This value
-	// can only be set when NotificationType is already set to use a particular Amazon
-	// SNS topic.
+	// specifies that Amazon SES does not include headers in notifications.
+	//
+	// This value can only be set when NotificationType is already set to use a
+	// particular Amazon SNS topic.
 	//
 	// This member is required.
 	Enabled bool
@@ -113,6 +118,9 @@ func (c *Client) addOperationSetIdentityHeadersInNotificationsEnabledMiddlewares
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -123,6 +131,12 @@ func (c *Client) addOperationSetIdentityHeadersInNotificationsEnabledMiddlewares
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpSetIdentityHeadersInNotificationsEnabledValidationMiddleware(stack); err != nil {
@@ -144,6 +158,18 @@ func (c *Client) addOperationSetIdentityHeadersInNotificationsEnabledMiddlewares
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

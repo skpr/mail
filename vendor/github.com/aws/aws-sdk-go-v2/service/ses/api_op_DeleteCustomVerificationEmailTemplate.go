@@ -10,11 +10,14 @@ import (
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-// Deletes an existing custom verification email template. For more information
-// about custom verification email templates, see Using Custom Verification Email
-// Templates (https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom)
-// in the Amazon SES Developer Guide. You can execute this operation no more than
-// once per second.
+// Deletes an existing custom verification email template.
+//
+// For more information about custom verification email templates, see [Using Custom Verification Email Templates] in the
+// Amazon SES Developer Guide.
+//
+// You can execute this operation no more than once per second.
+//
+// [Using Custom Verification Email Templates]: https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom
 func (c *Client) DeleteCustomVerificationEmailTemplate(ctx context.Context, params *DeleteCustomVerificationEmailTemplateInput, optFns ...func(*Options)) (*DeleteCustomVerificationEmailTemplateOutput, error) {
 	if params == nil {
 		params = &DeleteCustomVerificationEmailTemplateInput{}
@@ -91,6 +94,9 @@ func (c *Client) addOperationDeleteCustomVerificationEmailTemplateMiddlewares(st
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -101,6 +107,12 @@ func (c *Client) addOperationDeleteCustomVerificationEmailTemplateMiddlewares(st
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpDeleteCustomVerificationEmailTemplateValidationMiddleware(stack); err != nil {
@@ -122,6 +134,18 @@ func (c *Client) addOperationDeleteCustomVerificationEmailTemplateMiddlewares(st
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

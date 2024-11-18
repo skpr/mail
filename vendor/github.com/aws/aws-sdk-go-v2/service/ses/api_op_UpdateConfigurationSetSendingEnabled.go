@@ -15,7 +15,9 @@ import (
 // operation in conjunction with Amazon CloudWatch alarms to temporarily pause
 // email sending for a configuration set when the reputation metrics for that
 // configuration set (such as your bounce on complaint rate) exceed certain
-// thresholds. You can execute this operation no more than once per second.
+// thresholds.
+//
+// You can execute this operation no more than once per second.
 func (c *Client) UpdateConfigurationSetSendingEnabled(ctx context.Context, params *UpdateConfigurationSetSendingEnabledInput, optFns ...func(*Options)) (*UpdateConfigurationSetSendingEnabledOutput, error) {
 	if params == nil {
 		params = &UpdateConfigurationSetSendingEnabledInput{}
@@ -99,6 +101,9 @@ func (c *Client) addOperationUpdateConfigurationSetSendingEnabledMiddlewares(sta
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -109,6 +114,12 @@ func (c *Client) addOperationUpdateConfigurationSetSendingEnabledMiddlewares(sta
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpUpdateConfigurationSetSendingEnabledValidationMiddleware(stack); err != nil {
@@ -130,6 +141,18 @@ func (c *Client) addOperationUpdateConfigurationSetSendingEnabledMiddlewares(sta
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

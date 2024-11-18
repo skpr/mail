@@ -13,12 +13,16 @@ import (
 // Given an identity (an email address or a domain), enables or disables whether
 // Amazon SES forwards bounce and complaint notifications as email. Feedback
 // forwarding can only be disabled when Amazon Simple Notification Service (Amazon
-// SNS) topics are specified for both bounces and complaints. Feedback forwarding
-// does not apply to delivery notifications. Delivery notifications are only
-// available through Amazon SNS. You can execute this operation no more than once
-// per second. For more information about using notifications with Amazon SES, see
-// the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications.html)
-// .
+// SNS) topics are specified for both bounces and complaints.
+//
+// Feedback forwarding does not apply to delivery notifications. Delivery
+// notifications are only available through Amazon SNS.
+//
+// You can execute this operation no more than once per second.
+//
+// For more information about using notifications with Amazon SES, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications.html
 func (c *Client) SetIdentityFeedbackForwardingEnabled(ctx context.Context, params *SetIdentityFeedbackForwardingEnabledInput, optFns ...func(*Options)) (*SetIdentityFeedbackForwardingEnabledOutput, error) {
 	if params == nil {
 		params = &SetIdentityFeedbackForwardingEnabledInput{}
@@ -36,8 +40,9 @@ func (c *Client) SetIdentityFeedbackForwardingEnabled(ctx context.Context, param
 
 // Represents a request to enable or disable whether Amazon SES forwards you
 // bounce and complaint notifications through email. For information about email
-// feedback forwarding, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications-email.html)
-// .
+// feedback forwarding, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications-email.html
 type SetIdentityFeedbackForwardingEnabledInput struct {
 
 	// Sets whether Amazon SES forwards bounce and complaint notifications as email.
@@ -110,6 +115,9 @@ func (c *Client) addOperationSetIdentityFeedbackForwardingEnabledMiddlewares(sta
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -120,6 +128,12 @@ func (c *Client) addOperationSetIdentityFeedbackForwardingEnabledMiddlewares(sta
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpSetIdentityFeedbackForwardingEnabledValidationMiddleware(stack); err != nil {
@@ -141,6 +155,18 @@ func (c *Client) addOperationSetIdentityFeedbackForwardingEnabledMiddlewares(sta
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

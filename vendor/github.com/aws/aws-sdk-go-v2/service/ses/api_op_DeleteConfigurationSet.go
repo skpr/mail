@@ -11,9 +11,11 @@ import (
 )
 
 // Deletes a configuration set. Configuration sets enable you to publish email
-// sending events. For information about using configuration sets, see the Amazon
-// SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html)
-// . You can execute this operation no more than once per second.
+// sending events. For information about using configuration sets, see the [Amazon SES Developer Guide].
+//
+// You can execute this operation no more than once per second.
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html
 func (c *Client) DeleteConfigurationSet(ctx context.Context, params *DeleteConfigurationSetInput, optFns ...func(*Options)) (*DeleteConfigurationSetOutput, error) {
 	if params == nil {
 		params = &DeleteConfigurationSetInput{}
@@ -31,8 +33,9 @@ func (c *Client) DeleteConfigurationSet(ctx context.Context, params *DeleteConfi
 
 // Represents a request to delete a configuration set. Configuration sets enable
 // you to publish email sending events. For information about using configuration
-// sets, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html)
-// .
+// sets, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html
 type DeleteConfigurationSetInput struct {
 
 	// The name of the configuration set to delete.
@@ -94,6 +97,9 @@ func (c *Client) addOperationDeleteConfigurationSetMiddlewares(stack *middleware
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -104,6 +110,12 @@ func (c *Client) addOperationDeleteConfigurationSetMiddlewares(stack *middleware
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpDeleteConfigurationSetValidationMiddleware(stack); err != nil {
@@ -125,6 +137,18 @@ func (c *Client) addOperationDeleteConfigurationSetMiddlewares(stack *middleware
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

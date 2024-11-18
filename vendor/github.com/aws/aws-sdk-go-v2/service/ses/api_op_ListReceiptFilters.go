@@ -12,9 +12,13 @@ import (
 )
 
 // Lists the IP address filters associated with your Amazon Web Services account
-// in the current Amazon Web Services Region. For information about managing IP
-// address filters, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/receiving-email-ip-filtering-console-walkthrough.html)
-// . You can execute this operation no more than once per second.
+// in the current Amazon Web Services Region.
+//
+// For information about managing IP address filters, see the [Amazon SES Developer Guide].
+//
+// You can execute this operation no more than once per second.
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/receiving-email-ip-filtering-console-walkthrough.html
 func (c *Client) ListReceiptFilters(ctx context.Context, params *ListReceiptFiltersInput, optFns ...func(*Options)) (*ListReceiptFiltersOutput, error) {
 	if params == nil {
 		params = &ListReceiptFiltersInput{}
@@ -32,8 +36,9 @@ func (c *Client) ListReceiptFilters(ctx context.Context, params *ListReceiptFilt
 
 // Represents a request to list the IP address filters that exist under your
 // Amazon Web Services account. You use IP address filters when you receive email
-// with Amazon SES. For more information, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/receiving-email-concepts.html)
-// .
+// with Amazon SES. For more information, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/receiving-email-concepts.html
 type ListReceiptFiltersInput struct {
 	noSmithyDocumentSerde
 }
@@ -94,6 +99,9 @@ func (c *Client) addOperationListReceiptFiltersMiddlewares(stack *middleware.Sta
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -104,6 +112,12 @@ func (c *Client) addOperationListReceiptFiltersMiddlewares(stack *middleware.Sta
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = stack.Initialize.Add(newServiceMetadataMiddleware_opListReceiptFilters(options.Region), middleware.Before); err != nil {
@@ -122,6 +136,18 @@ func (c *Client) addOperationListReceiptFiltersMiddlewares(stack *middleware.Sta
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

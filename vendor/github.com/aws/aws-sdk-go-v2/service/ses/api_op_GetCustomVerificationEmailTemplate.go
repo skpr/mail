@@ -11,10 +11,14 @@ import (
 )
 
 // Returns the custom email verification template for the template name you
-// specify. For more information about custom verification email templates, see
-// Using Custom Verification Email Templates (https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom)
-// in the Amazon SES Developer Guide. You can execute this operation no more than
-// once per second.
+// specify.
+//
+// For more information about custom verification email templates, see [Using Custom Verification Email Templates] in the
+// Amazon SES Developer Guide.
+//
+// You can execute this operation no more than once per second.
+//
+// [Using Custom Verification Email Templates]: https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom
 func (c *Client) GetCustomVerificationEmailTemplate(ctx context.Context, params *GetCustomVerificationEmailTemplateInput, optFns ...func(*Options)) (*GetCustomVerificationEmailTemplateOutput, error) {
 	if params == nil {
 		params = &GetCustomVerificationEmailTemplateInput{}
@@ -113,6 +117,9 @@ func (c *Client) addOperationGetCustomVerificationEmailTemplateMiddlewares(stack
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -123,6 +130,12 @@ func (c *Client) addOperationGetCustomVerificationEmailTemplateMiddlewares(stack
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpGetCustomVerificationEmailTemplateValidationMiddleware(stack); err != nil {
@@ -144,6 +157,18 @@ func (c *Client) addOperationGetCustomVerificationEmailTemplateMiddlewares(stack
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

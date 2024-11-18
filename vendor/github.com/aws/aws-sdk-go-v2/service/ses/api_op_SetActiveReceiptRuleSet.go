@@ -10,11 +10,16 @@ import (
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-// Sets the specified receipt rule set as the active receipt rule set. To disable
-// your email-receiving through Amazon SES completely, you can call this operation
-// with RuleSetName set to null. For information about managing receipt rule sets,
-// see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/receiving-email-receipt-rules-console-walkthrough.html)
-// . You can execute this operation no more than once per second.
+// Sets the specified receipt rule set as the active receipt rule set.
+//
+// To disable your email-receiving through Amazon SES completely, you can call
+// this operation with RuleSetName set to null.
+//
+// For information about managing receipt rule sets, see the [Amazon SES Developer Guide].
+//
+// You can execute this operation no more than once per second.
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/receiving-email-receipt-rules-console-walkthrough.html
 func (c *Client) SetActiveReceiptRuleSet(ctx context.Context, params *SetActiveReceiptRuleSetInput, optFns ...func(*Options)) (*SetActiveReceiptRuleSetOutput, error) {
 	if params == nil {
 		params = &SetActiveReceiptRuleSetInput{}
@@ -32,8 +37,9 @@ func (c *Client) SetActiveReceiptRuleSet(ctx context.Context, params *SetActiveR
 
 // Represents a request to set a receipt rule set as the active receipt rule set.
 // You use receipt rule sets to receive email with Amazon SES. For more
-// information, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/receiving-email-concepts.html)
-// .
+// information, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/receiving-email-concepts.html
 type SetActiveReceiptRuleSetInput struct {
 
 	// The name of the receipt rule set to make active. Setting this value to null
@@ -94,6 +100,9 @@ func (c *Client) addOperationSetActiveReceiptRuleSetMiddlewares(stack *middlewar
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -104,6 +113,12 @@ func (c *Client) addOperationSetActiveReceiptRuleSetMiddlewares(stack *middlewar
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = stack.Initialize.Add(newServiceMetadataMiddleware_opSetActiveReceiptRuleSet(options.Region), middleware.Before); err != nil {
@@ -122,6 +137,18 @@ func (c *Client) addOperationSetActiveReceiptRuleSetMiddlewares(stack *middlewar
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

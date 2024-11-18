@@ -11,10 +11,14 @@ import (
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-// Creates a configuration set. Configuration sets enable you to publish email
-// sending events. For information about using configuration sets, see the Amazon
-// SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html)
-// . You can execute this operation no more than once per second.
+// Creates a configuration set.
+//
+// Configuration sets enable you to publish email sending events. For information
+// about using configuration sets, see the [Amazon SES Developer Guide].
+//
+// You can execute this operation no more than once per second.
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html
 func (c *Client) CreateConfigurationSet(ctx context.Context, params *CreateConfigurationSetInput, optFns ...func(*Options)) (*CreateConfigurationSetOutput, error) {
 	if params == nil {
 		params = &CreateConfigurationSetInput{}
@@ -32,8 +36,9 @@ func (c *Client) CreateConfigurationSet(ctx context.Context, params *CreateConfi
 
 // Represents a request to create a configuration set. Configuration sets enable
 // you to publish email sending events. For information about using configuration
-// sets, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html)
-// .
+// sets, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html
 type CreateConfigurationSetInput struct {
 
 	// A data structure that contains the name of the configuration set.
@@ -95,6 +100,9 @@ func (c *Client) addOperationCreateConfigurationSetMiddlewares(stack *middleware
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -105,6 +113,12 @@ func (c *Client) addOperationCreateConfigurationSetMiddlewares(stack *middleware
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpCreateConfigurationSetValidationMiddleware(stack); err != nil {
@@ -126,6 +140,18 @@ func (c *Client) addOperationCreateConfigurationSetMiddlewares(stack *middleware
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

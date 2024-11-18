@@ -13,8 +13,11 @@ import (
 
 // Creates an email template. Email templates enable you to send personalized
 // email to one or more destinations in a single operation. For more information,
-// see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/send-personalized-email-api.html)
-// . You can execute this operation no more than once per second.
+// see the [Amazon SES Developer Guide].
+//
+// You can execute this operation no more than once per second.
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/send-personalized-email-api.html
 func (c *Client) CreateTemplate(ctx context.Context, params *CreateTemplateInput, optFns ...func(*Options)) (*CreateTemplateOutput, error) {
 	if params == nil {
 		params = &CreateTemplateInput{}
@@ -30,9 +33,10 @@ func (c *Client) CreateTemplate(ctx context.Context, params *CreateTemplateInput
 	return out, nil
 }
 
-// Represents a request to create an email template. For more information, see the
-// Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/send-personalized-email-api.html)
+// Represents a request to create an email template. For more information, see the [Amazon SES Developer Guide]
 // .
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/send-personalized-email-api.html
 type CreateTemplateInput struct {
 
 	// The content of the email, composed of a subject line and either an HTML part or
@@ -94,6 +98,9 @@ func (c *Client) addOperationCreateTemplateMiddlewares(stack *middleware.Stack, 
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -104,6 +111,12 @@ func (c *Client) addOperationCreateTemplateMiddlewares(stack *middleware.Stack, 
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpCreateTemplateValidationMiddleware(stack); err != nil {
@@ -125,6 +138,18 @@ func (c *Client) addOperationCreateTemplateMiddlewares(stack *middleware.Stack, 
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

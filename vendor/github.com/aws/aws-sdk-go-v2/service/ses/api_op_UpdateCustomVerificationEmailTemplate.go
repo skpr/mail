@@ -10,11 +10,14 @@ import (
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-// Updates an existing custom verification email template. For more information
-// about custom verification email templates, see Using Custom Verification Email
-// Templates (https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom)
-// in the Amazon SES Developer Guide. You can execute this operation no more than
-// once per second.
+// Updates an existing custom verification email template.
+//
+// For more information about custom verification email templates, see [Using Custom Verification Email Templates] in the
+// Amazon SES Developer Guide.
+//
+// You can execute this operation no more than once per second.
+//
+// [Using Custom Verification Email Templates]: https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom
 func (c *Client) UpdateCustomVerificationEmailTemplate(ctx context.Context, params *UpdateCustomVerificationEmailTemplateInput, optFns ...func(*Options)) (*UpdateCustomVerificationEmailTemplateOutput, error) {
 	if params == nil {
 		params = &UpdateCustomVerificationEmailTemplateInput{}
@@ -51,8 +54,9 @@ type UpdateCustomVerificationEmailTemplateInput struct {
 
 	// The content of the custom verification email. The total size of the email must
 	// be less than 10 MB. The message body may contain HTML, with some limitations.
-	// For more information, see Custom Verification Email Frequently Asked Questions (https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom)
-	// in the Amazon SES Developer Guide.
+	// For more information, see [Custom Verification Email Frequently Asked Questions]in the Amazon SES Developer Guide.
+	//
+	// [Custom Verification Email Frequently Asked Questions]: https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom
 	TemplateContent *string
 
 	// The subject line of the custom verification email.
@@ -111,6 +115,9 @@ func (c *Client) addOperationUpdateCustomVerificationEmailTemplateMiddlewares(st
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -121,6 +128,12 @@ func (c *Client) addOperationUpdateCustomVerificationEmailTemplateMiddlewares(st
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpUpdateCustomVerificationEmailTemplateValidationMiddleware(stack); err != nil {
@@ -142,6 +155,18 @@ func (c *Client) addOperationUpdateCustomVerificationEmailTemplateMiddlewares(st
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

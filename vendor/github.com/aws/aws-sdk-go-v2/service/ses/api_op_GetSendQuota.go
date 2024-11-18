@@ -10,8 +10,9 @@ import (
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-// Provides the sending limits for the Amazon SES account. You can execute this
-// operation no more than once per second.
+// Provides the sending limits for the Amazon SES account.
+//
+// You can execute this operation no more than once per second.
 func (c *Client) GetSendQuota(ctx context.Context, params *GetSendQuotaInput, optFns ...func(*Options)) (*GetSendQuotaOutput, error) {
 	if params == nil {
 		params = &GetSendQuotaInput{}
@@ -40,8 +41,10 @@ type GetSendQuotaOutput struct {
 	Max24HourSend float64
 
 	// The maximum number of emails that Amazon SES can accept from the user's account
-	// per second. The rate at which Amazon SES accepts the user's messages might be
-	// less than the maximum send rate.
+	// per second.
+	//
+	// The rate at which Amazon SES accepts the user's messages might be less than the
+	// maximum send rate.
 	MaxSendRate float64
 
 	// The number of emails sent during the previous 24 hours.
@@ -96,6 +99,9 @@ func (c *Client) addOperationGetSendQuotaMiddlewares(stack *middleware.Stack, op
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -106,6 +112,12 @@ func (c *Client) addOperationGetSendQuotaMiddlewares(stack *middleware.Stack, op
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = stack.Initialize.Add(newServiceMetadataMiddleware_opGetSendQuota(options.Region), middleware.Before); err != nil {
@@ -124,6 +136,18 @@ func (c *Client) addOperationGetSendQuotaMiddlewares(stack *middleware.Stack, op
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

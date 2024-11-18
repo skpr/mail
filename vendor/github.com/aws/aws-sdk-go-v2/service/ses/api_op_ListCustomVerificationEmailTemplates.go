@@ -12,10 +12,14 @@ import (
 )
 
 // Lists the existing custom verification email templates for your account in the
-// current Amazon Web Services Region. For more information about custom
-// verification email templates, see Using Custom Verification Email Templates (https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom)
-// in the Amazon SES Developer Guide. You can execute this operation no more than
-// once per second.
+// current Amazon Web Services Region.
+//
+// For more information about custom verification email templates, see [Using Custom Verification Email Templates] in the
+// Amazon SES Developer Guide.
+//
+// You can execute this operation no more than once per second.
+//
+// [Using Custom Verification Email Templates]: https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom
 func (c *Client) ListCustomVerificationEmailTemplates(ctx context.Context, params *ListCustomVerificationEmailTemplatesInput, optFns ...func(*Options)) (*ListCustomVerificationEmailTemplatesOutput, error) {
 	if params == nil {
 		params = &ListCustomVerificationEmailTemplatesInput{}
@@ -32,9 +36,12 @@ func (c *Client) ListCustomVerificationEmailTemplates(ctx context.Context, param
 }
 
 // Represents a request to list the existing custom verification email templates
-// for your account. For more information about custom verification email
-// templates, see Using Custom Verification Email Templates (https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom)
-// in the Amazon SES Developer Guide.
+// for your account.
+//
+// For more information about custom verification email templates, see [Using Custom Verification Email Templates] in the
+// Amazon SES Developer Guide.
+//
+// [Using Custom Verification Email Templates]: https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#send-email-verify-address-custom
 type ListCustomVerificationEmailTemplatesInput struct {
 
 	// The maximum number of custom verification email templates to return. This value
@@ -110,6 +117,9 @@ func (c *Client) addOperationListCustomVerificationEmailTemplatesMiddlewares(sta
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -120,6 +130,12 @@ func (c *Client) addOperationListCustomVerificationEmailTemplatesMiddlewares(sta
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = stack.Initialize.Add(newServiceMetadataMiddleware_opListCustomVerificationEmailTemplates(options.Region), middleware.Before); err != nil {
@@ -140,16 +156,20 @@ func (c *Client) addOperationListCustomVerificationEmailTemplatesMiddlewares(sta
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
 		return err
 	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
+		return err
+	}
 	return nil
 }
-
-// ListCustomVerificationEmailTemplatesAPIClient is a client that implements the
-// ListCustomVerificationEmailTemplates operation.
-type ListCustomVerificationEmailTemplatesAPIClient interface {
-	ListCustomVerificationEmailTemplates(context.Context, *ListCustomVerificationEmailTemplatesInput, ...func(*Options)) (*ListCustomVerificationEmailTemplatesOutput, error)
-}
-
-var _ ListCustomVerificationEmailTemplatesAPIClient = (*Client)(nil)
 
 // ListCustomVerificationEmailTemplatesPaginatorOptions is the paginator options
 // for ListCustomVerificationEmailTemplates
@@ -220,6 +240,9 @@ func (p *ListCustomVerificationEmailTemplatesPaginator) NextPage(ctx context.Con
 	}
 	params.MaxResults = limit
 
+	optFns = append([]func(*Options){
+		addIsPaginatorUserAgent,
+	}, optFns...)
 	result, err := p.client.ListCustomVerificationEmailTemplates(ctx, &params, optFns...)
 	if err != nil {
 		return nil, err
@@ -238,6 +261,14 @@ func (p *ListCustomVerificationEmailTemplatesPaginator) NextPage(ctx context.Con
 
 	return result, nil
 }
+
+// ListCustomVerificationEmailTemplatesAPIClient is a client that implements the
+// ListCustomVerificationEmailTemplates operation.
+type ListCustomVerificationEmailTemplatesAPIClient interface {
+	ListCustomVerificationEmailTemplates(context.Context, *ListCustomVerificationEmailTemplatesInput, ...func(*Options)) (*ListCustomVerificationEmailTemplatesOutput, error)
+}
+
+var _ ListCustomVerificationEmailTemplatesAPIClient = (*Client)(nil)
 
 func newServiceMetadataMiddleware_opListCustomVerificationEmailTemplates(region string) *awsmiddleware.RegisterServiceMetadata {
 	return &awsmiddleware.RegisterServiceMetadata{
