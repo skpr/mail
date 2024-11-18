@@ -11,7 +11,9 @@ import (
 )
 
 // Returns the email sending status of the Amazon SES account for the current
-// Region. You can execute this operation no more than once per second.
+// Region.
+//
+// You can execute this operation no more than once per second.
 func (c *Client) GetAccountSendingEnabled(ctx context.Context, params *GetAccountSendingEnabledInput, optFns ...func(*Options)) (*GetAccountSendingEnabledOutput, error) {
 	if params == nil {
 		params = &GetAccountSendingEnabledInput{}
@@ -88,6 +90,9 @@ func (c *Client) addOperationGetAccountSendingEnabledMiddlewares(stack *middlewa
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -98,6 +103,12 @@ func (c *Client) addOperationGetAccountSendingEnabledMiddlewares(stack *middlewa
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = stack.Initialize.Add(newServiceMetadataMiddleware_opGetAccountSendingEnabled(options.Region), middleware.Before); err != nil {
@@ -116,6 +127,18 @@ func (c *Client) addOperationGetAccountSendingEnabledMiddlewares(stack *middlewa
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

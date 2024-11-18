@@ -11,13 +11,17 @@ import (
 )
 
 // Deletes an association between a configuration set and a custom domain for open
-// and click event tracking. By default, images and links used for tracking open
-// and click events are hosted on domains operated by Amazon SES. You can configure
-// a subdomain of your own to handle these events. For information about using
-// custom domains, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/configure-custom-open-click-domains.html)
-// . Deleting this kind of association results in emails sent using the specified
+// and click event tracking.
+//
+// By default, images and links used for tracking open and click events are hosted
+// on domains operated by Amazon SES. You can configure a subdomain of your own to
+// handle these events. For information about using custom domains, see the [Amazon SES Developer Guide].
+//
+// Deleting this kind of association results in emails sent using the specified
 // configuration set to capture open and click events using the standard, Amazon
 // SES-operated domains.
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/configure-custom-open-click-domains.html
 func (c *Client) DeleteConfigurationSetTrackingOptions(ctx context.Context, params *DeleteConfigurationSetTrackingOptionsInput, optFns ...func(*Options)) (*DeleteConfigurationSetTrackingOptionsOutput, error) {
 	if params == nil {
 		params = &DeleteConfigurationSetTrackingOptionsInput{}
@@ -96,6 +100,9 @@ func (c *Client) addOperationDeleteConfigurationSetTrackingOptionsMiddlewares(st
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -106,6 +113,12 @@ func (c *Client) addOperationDeleteConfigurationSetTrackingOptionsMiddlewares(st
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpDeleteConfigurationSetTrackingOptionsValidationMiddleware(stack); err != nil {
@@ -127,6 +140,18 @@ func (c *Client) addOperationDeleteConfigurationSetTrackingOptionsMiddlewares(st
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

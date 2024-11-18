@@ -12,9 +12,13 @@ import (
 
 // Creates a receipt rule set by cloning an existing one. All receipt rules and
 // configurations are copied to the new receipt rule set and are completely
-// independent of the source rule set. For information about setting up rule sets,
-// see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/receiving-email-concepts.html#receiving-email-concepts-rules)
-// . You can execute this operation no more than once per second.
+// independent of the source rule set.
+//
+// For information about setting up rule sets, see the [Amazon SES Developer Guide].
+//
+// You can execute this operation no more than once per second.
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/receiving-email-concepts.html#receiving-email-concepts-rules
 func (c *Client) CloneReceiptRuleSet(ctx context.Context, params *CloneReceiptRuleSetInput, optFns ...func(*Options)) (*CloneReceiptRuleSetOutput, error) {
 	if params == nil {
 		params = &CloneReceiptRuleSetInput{}
@@ -32,8 +36,9 @@ func (c *Client) CloneReceiptRuleSet(ctx context.Context, params *CloneReceiptRu
 
 // Represents a request to create a receipt rule set by cloning an existing one.
 // You use receipt rule sets to receive email with Amazon SES. For more
-// information, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/receiving-email-concepts.html)
-// .
+// information, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/receiving-email-concepts.html
 type CloneReceiptRuleSetInput struct {
 
 	// The name of the rule set to clone.
@@ -43,9 +48,12 @@ type CloneReceiptRuleSetInput struct {
 
 	// The name of the rule set to create. The name must meet the following
 	// requirements:
+	//
 	//   - Contain only ASCII letters (a-z, A-Z), numbers (0-9), underscores (_), or
 	//   dashes (-).
+	//
 	//   - Start and end with a letter or number.
+	//
 	//   - Contain 64 characters or fewer.
 	//
 	// This member is required.
@@ -105,6 +113,9 @@ func (c *Client) addOperationCloneReceiptRuleSetMiddlewares(stack *middleware.St
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -115,6 +126,12 @@ func (c *Client) addOperationCloneReceiptRuleSetMiddlewares(stack *middleware.St
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpCloneReceiptRuleSetValidationMiddleware(stack); err != nil {
@@ -136,6 +153,18 @@ func (c *Client) addOperationCloneReceiptRuleSetMiddlewares(stack *middleware.St
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

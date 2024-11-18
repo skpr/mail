@@ -12,11 +12,14 @@ import (
 )
 
 // Given a list of verified identities (email addresses and/or domains), returns a
-// structure describing identity notification attributes. This operation is
-// throttled at one request per second and can only get notification attributes for
-// up to 100 identities at a time. For more information about using notifications
-// with Amazon SES, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications.html)
-// .
+// structure describing identity notification attributes.
+//
+// This operation is throttled at one request per second and can only get
+// notification attributes for up to 100 identities at a time.
+//
+// For more information about using notifications with Amazon SES, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications.html
 func (c *Client) GetIdentityNotificationAttributes(ctx context.Context, params *GetIdentityNotificationAttributesInput, optFns ...func(*Options)) (*GetIdentityNotificationAttributesOutput, error) {
 	if params == nil {
 		params = &GetIdentityNotificationAttributesInput{}
@@ -34,8 +37,9 @@ func (c *Client) GetIdentityNotificationAttributes(ctx context.Context, params *
 
 // Represents a request to return the notification attributes for a list of
 // identities you verified with Amazon SES. For information about Amazon SES
-// notifications, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications.html)
-// .
+// notifications, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity-using-notifications.html
 type GetIdentityNotificationAttributesInput struct {
 
 	// A list of one or more identities. You can specify an identity by using its name
@@ -105,6 +109,9 @@ func (c *Client) addOperationGetIdentityNotificationAttributesMiddlewares(stack 
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -115,6 +122,12 @@ func (c *Client) addOperationGetIdentityNotificationAttributesMiddlewares(stack 
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpGetIdentityNotificationAttributesValidationMiddleware(stack); err != nil {
@@ -136,6 +149,18 @@ func (c *Client) addOperationGetIdentityNotificationAttributesMiddlewares(stack 
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

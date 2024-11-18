@@ -27,8 +27,9 @@ func (c *Client) VerifyEmailAddress(ctx context.Context, params *VerifyEmailAddr
 }
 
 // Represents a request to begin email address verification with Amazon SES. For
-// information about email address verification, see the Amazon SES Developer Guide (https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#verify-email-addresses-procedure)
-// .
+// information about email address verification, see the [Amazon SES Developer Guide].
+//
+// [Amazon SES Developer Guide]: https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#verify-email-addresses-procedure
 type VerifyEmailAddressInput struct {
 
 	// The email address to be verified.
@@ -89,6 +90,9 @@ func (c *Client) addOperationVerifyEmailAddressMiddlewares(stack *middleware.Sta
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -99,6 +103,12 @@ func (c *Client) addOperationVerifyEmailAddressMiddlewares(stack *middleware.Sta
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpVerifyEmailAddressValidationMiddleware(stack); err != nil {
@@ -120,6 +130,18 @@ func (c *Client) addOperationVerifyEmailAddressMiddlewares(stack *middleware.Sta
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

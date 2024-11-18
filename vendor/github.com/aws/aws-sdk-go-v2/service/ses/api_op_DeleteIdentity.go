@@ -11,8 +11,9 @@ import (
 )
 
 // Deletes the specified identity (an email address or a domain) from the list of
-// verified identities. You can execute this operation no more than once per
-// second.
+// verified identities.
+//
+// You can execute this operation no more than once per second.
 func (c *Client) DeleteIdentity(ctx context.Context, params *DeleteIdentityInput, optFns ...func(*Options)) (*DeleteIdentityOutput, error) {
 	if params == nil {
 		params = &DeleteIdentityInput{}
@@ -92,6 +93,9 @@ func (c *Client) addOperationDeleteIdentityMiddlewares(stack *middleware.Stack, 
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -102,6 +106,12 @@ func (c *Client) addOperationDeleteIdentityMiddlewares(stack *middleware.Stack, 
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = addOpDeleteIdentityValidationMiddleware(stack); err != nil {
@@ -123,6 +133,18 @@ func (c *Client) addOperationDeleteIdentityMiddlewares(stack *middleware.Stack, 
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

@@ -14,7 +14,9 @@ import (
 // Provides sending statistics for the current Amazon Web Services Region. The
 // result is a list of data points, representing the last two weeks of sending
 // activity. Each data point in the list contains statistics for a 15-minute period
-// of time. You can execute this operation no more than once per second.
+// of time.
+//
+// You can execute this operation no more than once per second.
 func (c *Client) GetSendStatistics(ctx context.Context, params *GetSendStatisticsInput, optFns ...func(*Options)) (*GetSendStatisticsOutput, error) {
 	if params == nil {
 		params = &GetSendStatisticsInput{}
@@ -90,6 +92,9 @@ func (c *Client) addOperationGetSendStatisticsMiddlewares(stack *middleware.Stac
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -100,6 +105,12 @@ func (c *Client) addOperationGetSendStatisticsMiddlewares(stack *middleware.Stac
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = stack.Initialize.Add(newServiceMetadataMiddleware_opGetSendStatistics(options.Region), middleware.Before); err != nil {
@@ -118,6 +129,18 @@ func (c *Client) addOperationGetSendStatisticsMiddlewares(stack *middleware.Stac
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
 		return err
 	}
 	return nil

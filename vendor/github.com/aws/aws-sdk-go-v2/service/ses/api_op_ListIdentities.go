@@ -13,15 +13,17 @@ import (
 
 // Returns a list containing all of the identities (email addresses and domains)
 // for your Amazon Web Services account in the current Amazon Web Services Region,
-// regardless of verification status. You can execute this operation no more than
-// once per second. It's recommended that for successive pagination calls of this
-// API, you continue to the use the same parameter/value pairs as used in the
-// original call, e.g., if you used IdentityType=Domain in the the original call
-// and received a NextToken in the response, you should continue providing the
-// IdentityType=Domain parameter for further NextToken calls; however, if you
-// didn't provide the IdentityType parameter in the original call, then continue
-// to not provide it for successive pagination calls. Using this protocol will
-// ensure consistent results.
+// regardless of verification status.
+//
+// You can execute this operation no more than once per second.
+//
+// It's recommended that for successive pagination calls of this API, you continue
+// to the use the same parameter/value pairs as used in the original call, e.g., if
+// you used IdentityType=Domain in the the original call and received a NextToken
+// in the response, you should continue providing the IdentityType=Domain
+// parameter for further NextToken calls; however, if you didn't provide the
+// IdentityType parameter in the original call, then continue to not provide it for
+// successive pagination calls. Using this protocol will ensure consistent results.
 func (c *Client) ListIdentities(ctx context.Context, params *ListIdentitiesInput, optFns ...func(*Options)) (*ListIdentitiesOutput, error) {
 	if params == nil {
 		params = &ListIdentitiesInput{}
@@ -116,6 +118,9 @@ func (c *Client) addOperationListIdentitiesMiddlewares(stack *middleware.Stack, 
 	if err = addRecordResponseTiming(stack); err != nil {
 		return err
 	}
+	if err = addSpanRetryLoop(stack, options); err != nil {
+		return err
+	}
 	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
@@ -126,6 +131,12 @@ func (c *Client) addOperationListIdentitiesMiddlewares(stack *middleware.Stack, 
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
+		return err
+	}
+	if err = addTimeOffsetBuild(stack, c); err != nil {
+		return err
+	}
+	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
 	if err = stack.Initialize.Add(newServiceMetadataMiddleware_opListIdentities(options.Region), middleware.Before); err != nil {
@@ -146,16 +157,20 @@ func (c *Client) addOperationListIdentitiesMiddlewares(stack *middleware.Stack, 
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
 		return err
 	}
+	if err = addSpanInitializeStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanInitializeEnd(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestStart(stack); err != nil {
+		return err
+	}
+	if err = addSpanBuildRequestEnd(stack); err != nil {
+		return err
+	}
 	return nil
 }
-
-// ListIdentitiesAPIClient is a client that implements the ListIdentities
-// operation.
-type ListIdentitiesAPIClient interface {
-	ListIdentities(context.Context, *ListIdentitiesInput, ...func(*Options)) (*ListIdentitiesOutput, error)
-}
-
-var _ ListIdentitiesAPIClient = (*Client)(nil)
 
 // ListIdentitiesPaginatorOptions is the paginator options for ListIdentities
 type ListIdentitiesPaginatorOptions struct {
@@ -220,6 +235,9 @@ func (p *ListIdentitiesPaginator) NextPage(ctx context.Context, optFns ...func(*
 	}
 	params.MaxItems = limit
 
+	optFns = append([]func(*Options){
+		addIsPaginatorUserAgent,
+	}, optFns...)
 	result, err := p.client.ListIdentities(ctx, &params, optFns...)
 	if err != nil {
 		return nil, err
@@ -238,6 +256,14 @@ func (p *ListIdentitiesPaginator) NextPage(ctx context.Context, optFns ...func(*
 
 	return result, nil
 }
+
+// ListIdentitiesAPIClient is a client that implements the ListIdentities
+// operation.
+type ListIdentitiesAPIClient interface {
+	ListIdentities(context.Context, *ListIdentitiesInput, ...func(*Options)) (*ListIdentitiesOutput, error)
+}
+
+var _ ListIdentitiesAPIClient = (*Client)(nil)
 
 func newServiceMetadataMiddleware_opListIdentities(region string) *awsmiddleware.RegisterServiceMetadata {
 	return &awsmiddleware.RegisterServiceMetadata{
