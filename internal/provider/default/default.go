@@ -19,7 +19,7 @@ const (
 	// FallbackAddr where mail will be forwarded to.
 	FallbackAddr = "mail:1025"
 	// FallbackFrom address which will be applied to email.
-	FallbackFrom = "skprmail"
+	FallbackFrom = "skprmail@example.com"
 )
 
 // Send the email to Mailhog.
