@@ -86,9 +86,22 @@ func main() {
 
 // Send email based on parameters.
 func send(ctx context.Context, region, username, password, from string, to []string, msg *mail.Message) error {
-	// Use AWS if the credentials match what we would expect for IAM.
+	// Use AWS if credentials are available from the default chain (eg. an Identity Policy inside a container).
+	cfg, err := ses.LoadDefaultConfig(ctx, region)
+	if err == nil {
+		return ses.Send(ctx, cfg, from, to, msg)
+	}
+
+	log.Printf("unable to use default aws credentials: %s", err)
+
+	// Fall back to AWS if the credentials match what we would expect for IAM.
 	if strings.HasPrefix(username, ses.AccessKeyPrefix) {
-		return ses.Send(ctx, region, username, password, from, to, msg)
+		cfg, err := ses.LoadStaticConfig(ctx, region, username, password)
+		if err != nil {
+			return err
+		}
+
+		return ses.Send(ctx, cfg, from, to, msg)
 	}
 
 	return defaultprovider.Send(ctx, to, msg)
