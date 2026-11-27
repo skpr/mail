@@ -10,6 +10,13 @@ Download the binary for the latest release and place it at `$(which sendmail)`.
 
 ## Credentials
 
+Credentials are resolved in the following order:
+
+1. The AWS SDK default credential chain (eg. an Identity Policy inside a container).
+2. Static IAM keys from skpr config or environment variables (see below).
+
+If neither is available, mail is sent to a local SMTP server (`SKPRMAIL_ADDR`, defaults to `mail:1025`).
+
 ### skpr config
 The app knows how skpr mounts configuration into the container (via the mount at `/etc/skpr`). It picks up credentials from the following keys:
 

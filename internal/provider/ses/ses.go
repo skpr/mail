@@ -19,8 +19,23 @@ import (
 // https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html
 const AccessKeyPrefix = "AKIA"
 
-// Send email via AWS SES.
-func Send(ctx context.Context, region, username, password, from string, to []string, msg *mail.Message) error {
+// LoadDefaultConfig using credentials from the default chain (eg. an Identity Policy inside a container).
+func LoadDefaultConfig(ctx context.Context, region string) (aws.Config, error) {
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(region))
+	if err != nil {
+		return aws.Config{}, fmt.Errorf("failed to get aws config: %w", err)
+	}
+
+	_, err = cfg.Credentials.Retrieve(ctx)
+	if err != nil {
+		return aws.Config{}, fmt.Errorf("failed to retrieve aws credentials: %w", err)
+	}
+
+	return cfg, nil
+}
+
+// LoadStaticConfig using static IAM keys.
+func LoadStaticConfig(ctx context.Context, region, username, password string) (aws.Config, error) {
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithRegion(region),
 		config.WithCredentialsProvider(
@@ -28,15 +43,20 @@ func Send(ctx context.Context, region, username, password, from string, to []str
 		),
 	)
 	if err != nil {
-		return fmt.Errorf("failed to get aws config: %w", err)
+		return aws.Config{}, fmt.Errorf("failed to get aws config: %w", err)
 	}
 
+	return cfg, nil
+}
+
+// Send email via AWS SES.
+func Send(ctx context.Context, cfg aws.Config, from string, to []string, msg *mail.Message) error {
 	if val, ok := msg.Header[mailutils.HeaderTo]; ok {
 		to = append(to, val...)
 	}
 	msg.Header[mailutils.HeaderTo] = to
 
-	err = mailutils.EnforceFrom(msg, from)
+	err := mailutils.EnforceFrom(msg, from)
 	if err != nil {
 		return fmt.Errorf("failed to set from header: %w", err)
 	}
